@@ -4,14 +4,11 @@ project(astar)
 
 add_subdirectory(vendor/SDL/)
 
-file(GLOB SOURCE_FILES
-     "*.h"
-     "*.cpp"
-)
+file(GLOB_RECURSE SOURCES "${CMAKE_CURRENT_SOURCE_DIR}/src/*.cpp" "${CMAKE_CURRENT_SOURCE_DIR}/src/*.h")
 
-add_executable(astar ${SOURCE_FILES})
+add_executable(astar ${SOURCES})
 
 target_link_libraries(astar PRIVATE SDL3-static)
 target_link_directories(astar PRIVATE ${CMAKE_BINARY_DIR}/vendor/SDL/Debug)
 
-target_include_directories(astar PRIVATE ${PROJECT_SOURCE_DIR}/vendor/SDL/include vendor/imgui)
+target_include_directories(astar PRIVATE ${PROJECT_SOURCE_DIR}/vendor/SDL/include ${PROJECT_SOURCE_DIR}/vendor/gzip)
