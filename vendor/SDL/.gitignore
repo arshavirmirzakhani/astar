@@ -29,7 +29,7 @@ __pycache__
 *.rej
 
 # for CMake
-
+.cmake
 CMakeFiles/
 CMakeCache.txt
 cmake_install.cmake
