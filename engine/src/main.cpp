@@ -32,16 +32,16 @@ int main(int argc, char* argv[]) {
             if (e.type == SDL_EVENT_KEY_DOWN) {
                 /* the pressed key was Escape? */
                 if (e.key.key == SDLK_LEFT) {
-                    sprite_y -= 2;
+                    sprite_y -= 1;
                 }
                 if (e.key.key == SDLK_RIGHT) {
-                    sprite_y += 2;
+                    sprite_y += 1;
                 }
                 if (e.key.key == SDLK_UP) {
-                    sprite_x -= 2;
+                    sprite_x -= 1;
                 }
                 if (e.key.key == SDLK_DOWN) {
-                    sprite_x += 2;
+                    sprite_x += 1;
                 }
             }
         }
