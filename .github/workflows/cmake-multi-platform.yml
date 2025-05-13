@@ -22,6 +22,18 @@ jobs:
     steps:
     - uses: actions/checkout@v4
 
+    - name: Install LLVM on macOS
+      if: runner.os == 'macOS'
+      run: |
+        brew install llvm
+
+    - name: Configure environment to use Homebrew LLVM
+      if: runner.os == 'macOS'
+      run: |
+        echo "CC=/opt/homebrew/opt/llvm/bin/clang" >> $GITHUB_ENV
+        echo "CXX=/opt/homebrew/opt/llvm/bin/clang++" >> $GITHUB_ENV
+
+
     - name: Install dependencies
       if: runner.os == 'Linux'
       run: |
