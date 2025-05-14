@@ -16,11 +16,9 @@
 #include <stdio.h>
 #include <SDL3/SDL.h>
 
-bool checkbox;
 
 // Main code
 int main(int, char**) {
-
 
     if (!SDL_Init(SDL_INIT_VIDEO | SDL_INIT_GAMEPAD)) {
         printf("Error: SDL_Init(): %s\n", SDL_GetError());
@@ -60,9 +58,15 @@ int main(int, char**) {
     ImGui_ImplSDLRenderer3_Init(renderer);
 
     ImVec4 clear_color = ImVec4(0.45f, 0.55f, 0.60f, 1.00f);
-
     // Main loop
     bool done = false;
+
+    ImVec4 color1 = ImVec4(1.0f, 0.0f, 0.0f, 1.0f);
+    ImVec4 color2 = ImVec4(1.0f, 0.0f, 0.0f, 1.0f);
+
+    bool colort1=false;
+    bool colort2=false;
+
 
     while (!done) {
         SDL_Event event;
@@ -76,7 +80,6 @@ int main(int, char**) {
                 
         }
 
-        // [If using SDL_MAIN_USE_CALLBACKS: all code below would likely be your SDL_AppIterate() function]
         if (SDL_GetWindowFlags(window) & SDL_WINDOW_MINIMIZED) {
             SDL_Delay(10);
             continue;
@@ -84,12 +87,13 @@ int main(int, char**) {
 
         ImGui_ImplSDLRenderer3_NewFrame();
         ImGui_ImplSDL3_NewFrame();
-        ImGui::NewFrame();
 
+        ImGui::NewFrame();
+        
         ImGui::Begin("sprite");
 
-        ImGui::Checkbox("checkbox",&checkbox);
-
+        colort1 = ImGui::ColorButton("slot1",color1,ImGuiColorEditFlags_InputRGB,ImVec2(50,50));
+        
 
         ImGui::End();
         
