@@ -1,21 +1,12 @@
-// Dear ImGui: standalone example application for SDL3 + SDL_Renderer
-// (SDL is a cross-platform general purpose library for handling windows, inputs, OpenGL/Vulkan/Metal graphics context creation, etc.)
-
-// Learn about Dear ImGui:
-// - FAQ                  https://dearimgui.com/faq
-// - Getting Started      https://dearimgui.com/getting-started
-// - Documentation        https://dearimgui.com/docs (same as your local docs/ folder).
-// - Introduction, links and more at the top of imgui.cpp
-
-// Important to understand: SDL_Renderer is an _optional_ component of SDL3.
-// For a multi-platform app consider using e.g. SDL+DirectX on Windows and SDL+OpenGL on Linux/OSX.
-
 #include "imgui/imgui_impl_sdl3.h"
 #include "imgui/imgui_impl_sdlrenderer3.h"
 #include "imgui/imgui.h"
 #include <stdio.h>
+#include <string>
 #include <SDL3/SDL.h>
-
+#include <engine/game.h>
+#include <iostream>
+#include "editors/sprite_editor.h"
 
 // Main code
 int main(int, char**) {
@@ -58,15 +49,10 @@ int main(int, char**) {
     ImGui_ImplSDLRenderer3_Init(renderer);
 
     ImVec4 clear_color = ImVec4(0.45f, 0.55f, 0.60f, 1.00f);
-    // Main loop
     bool done = false;
-
-    ImVec4 color1 = ImVec4(1.0f, 0.0f, 0.0f, 1.0f);
-    ImVec4 color2 = ImVec4(1.0f, 0.0f, 0.0f, 1.0f);
-
-    bool colort1=false;
-    bool colort2=false;
-
+    
+    Sprite sprite(1,1);
+    Pallete pallete;
 
     while (!done) {
         SDL_Event event;
@@ -89,16 +75,12 @@ int main(int, char**) {
         ImGui_ImplSDL3_NewFrame();
 
         ImGui::NewFrame();
-        
-        ImGui::Begin("sprite");
-
-        colort1 = ImGui::ColorButton("slot1",color1,ImGuiColorEditFlags_InputRGB,ImVec2(50,50));
-        
-
-        ImGui::End();
+      
+        show_sprite_editor(sprite,pallete);  
         
         // Rendering
         ImGui::Render();
+
         SDL_SetRenderScale(renderer, io.DisplayFramebufferScale.x, io.DisplayFramebufferScale.y);
         SDL_SetRenderDrawColorFloat(renderer, clear_color.x, clear_color.y, clear_color.z, clear_color.w);
         SDL_RenderClear(renderer);

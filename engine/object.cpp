@@ -1,7 +1,7 @@
 #include "object.h"
 
-Object::Object(/* args */) {
-    
+Object::Object(std::string type) {
+    this->type_name = type;
 }
 
 Object::~Object() {

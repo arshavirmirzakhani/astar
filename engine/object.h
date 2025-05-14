@@ -6,9 +6,10 @@
 
 class Object {
     public:
-        Object(/* args */);
+        Object(std::string type);
         ~Object();
 
+        std::string type_name;
         unsigned int current_frame;
         int frame_per_tick; 
         std::string current_animation_state;
