@@ -16,10 +16,11 @@
 #include <stdio.h>
 #include <SDL3/SDL.h>
 
+bool checkbox;
+
 // Main code
 int main(int, char**) {
 
-    float* color;
 
     if (!SDL_Init(SDL_INIT_VIDEO | SDL_INIT_GAMEPAD)) {
         printf("Error: SDL_Init(): %s\n", SDL_GetError());
@@ -85,11 +86,10 @@ int main(int, char**) {
         ImGui_ImplSDL3_NewFrame();
         ImGui::NewFrame();
 
-        ImGui::Begin("Scene editor");
+        ImGui::Begin("sprite");
 
-        ImGui::BeginGroup();
-        ImGui::Text("list");
-        ImGui::EndGroup();
+        ImGui::Checkbox("checkbox",&checkbox);
+
 
         ImGui::End();
         
