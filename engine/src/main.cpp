@@ -4,7 +4,11 @@
 
 
 int main(int argc, char* argv[]) {
-    SDL_Init(SDL_INIT_VIDEO);
+    
+    if (!SDL_Init(SDL_INIT_VIDEO | SDL_INIT_GAMEPAD | SDL_INIT_GAMEPAD)) {
+        printf("Error: SDL_Init(): %s\n", SDL_GetError());
+        return -1;
+    }
 
     SDL_Window* window = SDL_CreateWindow("test", 640, 480, SDL_WINDOW_RESIZABLE);
     SDL_Renderer* renderer = SDL_CreateRenderer(window, NULL);
@@ -19,9 +23,7 @@ int main(int argc, char* argv[]) {
     SDL_FRect rect;
 
     int sprite_y = 20;
-    int sprite_x = 20;
-
-    
+    int sprite_x = 20;    
     
     while (!quit) {
 

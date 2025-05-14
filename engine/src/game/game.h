@@ -29,7 +29,7 @@ class Game {
         std::vector<unsigned char> screen_buffer; 
 
         unsigned int current_pallete = 0;
-        std::map<unsigned int,Pallete> color_pallets;
+        std::map<std::string, Pallete> color_pallets;
 
         void process();
         void render();
