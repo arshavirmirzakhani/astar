@@ -1,14 +1,11 @@
 #include "object.h"
 
 class Scene {
-    public:
+      public:
+	std::vector<Object> objects;
 
-        std::vector<Object> objects;
+	Scene();
+	~Scene();
 
-        Scene();
-        ~Scene();
-
-        void add_object(Object object);
-    };
-
-
+	void add_object(Object object);
+};

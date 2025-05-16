@@ -37,3 +37,4 @@
 .vscode/
 
 imgui.ini
+.clang-format

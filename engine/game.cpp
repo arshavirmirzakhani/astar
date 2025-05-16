@@ -1,13 +1,7 @@
 #include "game.h"
 
-Game::Game(std::string name) {
-    this->color_pallets[0] = Pallete();
-}
+Game::Game(std::string name) { this->color_pallets[0] = Pallete(); }
 
-Game::~Game() {
-}
+Game::~Game() {}
 
-
-void Game::render() {
-    ;    
-}
+void Game::render() { ; }
