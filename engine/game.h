@@ -3,19 +3,21 @@
 #include "object.h"
 #include "scene.h"
 #include <SDL3/SDL.h>
-#include <map>
-#include <string>
-#include <vector>
+#include <fstream>
 
 struct Color {
 	unsigned char r = 0;
 	unsigned char g = 0;
 	unsigned char b = 0;
 	unsigned char a = 255;
+
+	template <class Archive> void serialize(Archive& archive) { archive(r, g, b, a); }
 };
 
 struct Pallete {
 	Color colors[127];
+
+	template <class Archive> void serialize(Archive& archive) { archive(colors); }
 };
 
 class Game {
@@ -40,4 +42,8 @@ class Game {
 	void render();
 
 	void add_object(Object object);
+
+	template <class Archive> void serialize(Archive& archive) {
+		archive(name, engine_version, object_types, current_pallete, color_pallets);
+	}
 };

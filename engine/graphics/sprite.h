@@ -2,17 +2,16 @@
 #include "../global.h"
 #include <vector>
 class Sprite {
-    private:
-    public:
-        std::vector<unsigned char> sprite_buffer;
+      public:
+	std::vector<unsigned char> sprite_buffer;
 
-        Sprite(unsigned int width,unsigned int height);
-        ~Sprite();
+	Sprite(unsigned int width, unsigned int height);
+	~Sprite();
 
-        unsigned int width;
-        unsigned int height;
+	unsigned int width;
+	unsigned int height;
 
-        unsigned char* render(int sprite_x,int sprite_y);
+	unsigned char* render(int sprite_x, int sprite_y);
+
+	template <class Archive> void serialize(Archive& archive) { archive(sprite_buffer, width, height); }
 };
-
-
