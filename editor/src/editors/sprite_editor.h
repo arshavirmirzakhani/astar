@@ -42,7 +42,7 @@ void show_sprite_editor(Sprite& sprite, Pallete& pallete,unsigned int& choosen_c
     Color& c = pallete.colors[choosen_color_index];
     ImVec4 editableColor = toImVec4(c.r, c.g, c.b, c.a);
 
-    if (ImGui::ColorEdit4("color editor", (float*)&editableColor,ImGuiColorEditFlags_NoInputs)) {
+    if (ImGui::ColorEdit4("color editor", (float*)&editableColor,ImGuiColorEditFlags_NoInputs | ImGuiColorEditFlags_AlphaBar | ImGuiColorEditFlags_AlphaPreview)) {
         // Convert float [0,1] back to byte [0,255]
         c.r = static_cast<unsigned char>(editableColor.x * 255);
         c.g = static_cast<unsigned char>(editableColor.y * 255);
@@ -66,7 +66,7 @@ void show_sprite_editor(Sprite& sprite, Pallete& pallete,unsigned int& choosen_c
             ImVec2 cellMin = ImVec2(origin.x + x * cellSize, origin.y + y * cellSize);
             ImVec2 cellMax = ImVec2(cellMin.x + cellSize, cellMin.y + cellSize);
 
-            unsigned int color_index = (unsigned int)(sprite.sprite_buffer[(y * (sprite.width * 8)) + x + 1]);
+            unsigned int color_index = (unsigned int)(sprite.sprite_buffer[(y * (sprite.width * 8)) + x]);
 
             if (color_index < 0 || color_index >= 127)
                 continue;
@@ -80,7 +80,7 @@ void show_sprite_editor(Sprite& sprite, Pallete& pallete,unsigned int& choosen_c
             
             // Handle click
             if (ImGui::IsMouseHoveringRect(cellMin, cellMax) && ImGui::IsMouseDown(0)) {
-                sprite.sprite_buffer[(y * (sprite.width*8)) + x] = choosen_color_index - 1;
+                sprite.sprite_buffer[(y * (sprite.width*8)) + x] = choosen_color_index;
             }
             
         }
