@@ -26,15 +26,15 @@ void show_sprite_editor(Sprite& sprite, Pallete& pallete,unsigned int& choosen_c
     for (unsigned int i = 0; i < 127; ++i) {
         
         ImGui::PushID(i);
-        if (ImGui::ColorButton("##color", toImVec4(pallete.colors[i].r,pallete.colors[i].g,pallete.colors[i].b,pallete.colors[i].a),0,ImVec2(20,20))) {
+        if (ImGui::ColorButton("##color", toImVec4(pallete.colors[i].r,pallete.colors[i].g,pallete.colors[i].b,pallete.colors[i].a),0,ImVec2(40,40))) {
             choosen_color_index = i;
         }
+        ImGui::PopID();
         
         if ((i + 1) % 8 != 0) {
             ImGui::SameLine();
         } 
         
-        ImGui::PopID();
     }
 
     ImGui::NewLine();
@@ -55,38 +55,76 @@ void show_sprite_editor(Sprite& sprite, Pallete& pallete,unsigned int& choosen_c
     
     ImGui::SameLine();
     
-    ImDrawList* drawList = ImGui::GetWindowDrawList();
-    float cellSize = 50.0f;
-    ImVec2 origin = ImGui::GetCursorScreenPos();
+    ImGui::BeginGroup();
 
-    
-    for (unsigned int y = 0; y < sprite.height*8; y++) {
-        for (unsigned int x = 0; x < sprite.width*8; x++) {
+    ImGuiStyle& style = ImGui::GetStyle();
+    ImVec2 oldItemSpacing = style.ItemSpacing;
+    ImVec2 oldFramePadding = style.FramePadding;
 
-            ImVec2 cellMin = ImVec2(origin.x + x * cellSize, origin.y + y * cellSize);
-            ImVec2 cellMax = ImVec2(cellMin.x + cellSize, cellMin.y + cellSize);
+    style.ItemSpacing = ImVec2(0, 0);
+    style.FramePadding = ImVec2(0, 0);
 
-            unsigned int color_index = (unsigned int)(sprite.sprite_buffer[(y * (sprite.width * 8)) + x]);
+    ImVec2 avail = ImGui::GetContentRegionAvail();
+    int gridWidth = sprite.width * 8;
+    int gridHeight = sprite.height * 8;
 
-            if (color_index < 0 || color_index >= 127)
-                continue;
+    float maxGridWidth = avail.x;
+    float maxGridHeight = avail.y;
 
-            Color color = pallete.colors[color_index];
+    float pixelSizeX = maxGridWidth / gridWidth;
+    float pixelSizeY = maxGridHeight / gridHeight;
+    float pixelSize = std::min(pixelSizeX, pixelSizeY); // keep square aspect
+
+    ImVec2 startPos = ImGui::GetCursorScreenPos();
+
+    for (unsigned int y = 0; y < sprite.height * 8; y++) {
+        for (unsigned int x = 0; x < sprite.width * 8; x++) {
+            unsigned int index = y * (sprite.width * 8) + x;
+            unsigned int color_index = sprite.sprite_buffer[index];
+            if (color_index >= 128) continue;
+
+            ImVec2 pos = ImVec2(startPos.x + x * pixelSize, startPos.y + y * pixelSize);
             
-            ImU32 col = ImColor(toImVec4(color.r,color.g,color.b,color.a));
-            drawList->AddRectFilled(cellMin, cellMax, col);
-            drawList->AddRect(cellMin, cellMax, IM_COL32(50, 50, 50, 255));
+            ImDrawList* drawList = ImGui::GetWindowDrawList();
             
+            ImVec2 cellMin = pos;
+            ImVec2 cellMax = ImVec2(pos.x + pixelSize, pos.y + pixelSize);
             
-            // Handle click
-            if (ImGui::IsMouseHoveringRect(cellMin, cellMax) && ImGui::IsMouseDown(0)) {
-                sprite.sprite_buffer[(y * (sprite.width*8)) + x] = choosen_color_index;
+            if (color_index == 0) {
+                // Draw checkerboard for transparency
+                int checkerSize = static_cast<int>(pixelSize / 2);
+                for (int cy = 0; cy < 2; ++cy) {
+                    for (int cx = 0; cx < 2; ++cx) {
+                        ImVec2 p0 = ImVec2(cellMin.x + cx * checkerSize, cellMin.y + cy * checkerSize);
+                        ImVec2 p1 = ImVec2(p0.x + checkerSize, p0.y + checkerSize);
+                        ImU32 checkerColor = ((cx + cy) % 2 == 0) ? IM_COL32(200, 200, 200, 255) : IM_COL32(150, 150, 150, 255);
+                        drawList->AddRectFilled(p0, p1, checkerColor);
+                    }
+                }
+            } else {
+                Color color = pallete.colors[color_index - 1];
+                ImU32 col = ImColor(toImVec4(color.r, color.g, color.b, color.a));
+                drawList->AddRectFilled(cellMin, cellMax, col);
             }
-            
+
+            drawList->AddRect(cellMin, cellMax, IM_COL32(50, 50, 50, 255)); // border
+
+            // Painting logic (click or drag)
+            if (ImGui::IsMouseDown(ImGuiMouseButton_Left) && ImGui::IsMouseHoveringRect(cellMin, cellMax)) {
+                sprite.sprite_buffer[index] = choosen_color_index + 1;
+            } 
+            else if (ImGui::IsMouseDown(ImGuiMouseButton_Right) && ImGui::IsMouseHoveringRect(cellMin, cellMax)) {
+                sprite.sprite_buffer[index] = 0; // 0 = empty
+            }
+
         }
     }
 
-    ImGui::Dummy(ImVec2(sprite.width * cellSize, sprite.height * cellSize));
+    // Restore styles
+    style.ItemSpacing = oldItemSpacing;
+    style.FramePadding = oldFramePadding;
+
+    ImGui::EndGroup();
 
 
     ImGui::End();
