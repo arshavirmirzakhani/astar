@@ -2,11 +2,13 @@
 #include "imgui/imgui.h"
 #include "imgui/imgui_impl_sdl3.h"
 #include "imgui/imgui_impl_sdlrenderer3.h"
+#include "imgui_theme_setup.h"
 #include <SDL3/SDL.h>
 #include <engine/game.h>
 #include <iostream>
 #include <stdio.h>
 #include <string>
+
 
 // Main code
 int main(int, char**) {
@@ -46,7 +48,7 @@ int main(int, char**) {
 	io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;     // Enable Docking
 
 	// Setup Dear ImGui style
-	ImGui::StyleColorsDark();
+	SetupImGuiStyle();
 
 	ImGui_ImplSDL3_InitForSDLRenderer(window, renderer);
 	ImGui_ImplSDLRenderer3_Init(renderer);
