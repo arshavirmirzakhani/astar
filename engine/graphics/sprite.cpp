@@ -1,19 +1,16 @@
 #include "sprite.h"
+#include <iostream>
 
 Sprite::Sprite(unsigned int width,unsigned int height) {
 
     this->width = width;
     this->height = height;
 
-    this->sprite_buffer = new unsigned char[(this->width * 8) * this->height];
+    this->sprite_buffer = std::vector<unsigned char>((this->width*8) * (this->height*8),0);
+
 }
 
 Sprite::~Sprite() {
-    delete[] this->sprite_buffer;
-}
-
-void Sprite::set_buffer(unsigned char *buffer) {
-    this->sprite_buffer = buffer;
 }
 
 

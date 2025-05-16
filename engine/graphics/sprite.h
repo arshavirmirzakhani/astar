@@ -3,8 +3,8 @@
 #include <vector>
 class Sprite {
     private:
-        unsigned char *sprite_buffer;
     public:
+        std::vector<unsigned char> sprite_buffer;
 
         Sprite(unsigned int width,unsigned int height);
         ~Sprite();
@@ -13,8 +13,6 @@ class Sprite {
         unsigned int height;
 
         unsigned char* render(int sprite_x,int sprite_y);
-
-        void set_buffer(unsigned char *sprite_buffer);
 };
 
 

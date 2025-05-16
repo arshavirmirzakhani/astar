@@ -11,6 +11,8 @@
 // Main code
 int main(int, char**) {
 
+    unsigned int pallete_choosen_color = 0;
+
     if (!SDL_Init(SDL_INIT_VIDEO | SDL_INIT_GAMEPAD)) {
         printf("Error: SDL_Init(): %s\n", SDL_GetError());
         return -1;
@@ -54,6 +56,23 @@ int main(int, char**) {
     Sprite sprite(1,1);
     Pallete pallete;
 
+    Color red {
+        255,
+        0,
+        0,
+        255
+    };
+
+    Color yellow {
+        255,
+        255,
+        0,
+        255
+    };
+
+    pallete.colors[0] = red;
+    pallete.colors[1] = yellow;
+
     while (!done) {
         SDL_Event event;
         while (SDL_PollEvent(&event)) {
@@ -76,7 +95,7 @@ int main(int, char**) {
 
         ImGui::NewFrame();
       
-        show_sprite_editor(sprite,pallete);  
+        show_sprite_editor(sprite,pallete,pallete_choosen_color);  
         
         // Rendering
         ImGui::Render();
