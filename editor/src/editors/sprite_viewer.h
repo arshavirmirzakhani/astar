@@ -72,9 +72,6 @@ void show_sprite_viewer(SDL_Renderer* renderer, Sprite& sprite, Pallete& pallete
 	SDL_SetRenderTarget(renderer, oldTarget);
 
 	// === Sprite Viewer ===
-
-	// Vertical zoom slider
-	// === Sprite Viewer ===
 	ImGui::BeginGroup();
 	ImGui::Text("zoom");
 	ImGui::VSliderFloat("##ZoomSlider", ImVec2(40, 200), &zoom, minZoom, maxZoom, "%.1fx");
