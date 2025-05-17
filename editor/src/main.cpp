@@ -1,4 +1,5 @@
-#include "editors/sprite_editor.h"
+#include "editors/sprite_viewer.h"
+#include "font.h"
 #include "imgui/imgui.h"
 #include "imgui/imgui_impl_sdl3.h"
 #include "imgui/imgui_impl_sdlrenderer3.h"
@@ -8,7 +9,6 @@
 #include <iostream>
 #include <stdio.h>
 #include <string>
-
 
 // Main code
 int main(int, char**) {
@@ -46,7 +46,10 @@ int main(int, char**) {
 	io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard; // Enable Keyboard Controls
 	io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;  // Enable Gamepad Controls
 	io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;     // Enable Docking
+	io.ConfigWindowsMoveFromTitleBarOnly = true;
 
+	ImFont* font   = io.Fonts->AddFontFromMemoryTTF((void*)font_data, font_size, 20.0f);
+	io.FontDefault = font;
 	// Setup Dear ImGui style
 	SetupImGuiStyle();
 
@@ -59,12 +62,9 @@ int main(int, char**) {
 	Sprite sprite(1, 1);
 	Pallete pallete;
 
-	Color red{255, 0, 0, 255};
+	Game game("test");
 
-	Color yellow{255, 255, 0, 255};
-
-	pallete.colors[0] = red;
-	pallete.colors[1] = yellow;
+	pallete.load_pallete_from_hex(nes);
 
 	while (!done) {
 		SDL_Event event;
@@ -99,9 +99,11 @@ int main(int, char**) {
 						ImGuiWindowFlags_NoNavFocus;
 
 		if (ImGui::Begin("BaseWindow", nullptr, window_flags)) {
-			show_sprite_editor(sprite, pallete, pallete_choosen_color);
-		}
+			ImGuiID dockspace_id = ImGui::GetID("MainDockspace");
+			ImGui::DockSpace(dockspace_id, ImVec2(0.0f, 0.0f), ImGuiDockNodeFlags_None);
 
+			show_sprite_viewer(sprite, pallete, pallete_choosen_color);
+		}
 		ImGui::End();
 
 		// Rendering

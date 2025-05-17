@@ -2,6 +2,7 @@
 // designed and modified using Imthemes
 
 void SetupImGuiStyle() {
+	// astar style from ImThemes
 	ImGuiStyle& style = ImGui::GetStyle();
 
 	style.Alpha		       = 1.0f;
@@ -47,11 +48,12 @@ void SetupImGuiStyle() {
 	    ImVec4(0.8412017226219177f, 0.5887007713317871f, 0.3032658398151398f, 0.5490196347236633f);
 	style.Colors[ImGuiCol_FrameBgActive] =
 	    ImVec4(0.9227467775344849f, 0.5416688323020935f, 0.1108880192041397f, 0.5490196347236633f);
-	style.Colors[ImGuiCol_TitleBg] = ImVec4(0.09803921729326248f, 0.09803921729326248f, 0.09803921729326248f, 1.0f);
+	style.Colors[ImGuiCol_TitleBg] =
+	    ImVec4(0.8412017226219177f, 0.5887007713317871f, 0.3032658398151398f, 0.5490196347236633f);
 	style.Colors[ImGuiCol_TitleBgActive] =
-	    ImVec4(0.09803921729326248f, 0.09803921729326248f, 0.09803921729326248f, 1.0f);
+	    ImVec4(0.9227467775344849f, 0.5416688323020935f, 0.1108880192041397f, 0.5490196347236633f);
 	style.Colors[ImGuiCol_TitleBgCollapsed] =
-	    ImVec4(0.2588235437870026f, 0.2588235437870026f, 0.2588235437870026f, 0.0f);
+	    ImVec4(0.8412017226219177f, 0.5887007713317871f, 0.3032658398151398f, 0.5490196347236633f);
 	style.Colors[ImGuiCol_MenuBarBg] = ImVec4(0.0f, 0.0f, 0.0f, 0.0f);
 	style.Colors[ImGuiCol_ScrollbarBg] =
 	    ImVec4(0.1568627506494522f, 0.1568627506494522f, 0.1568627506494522f, 0.0f);

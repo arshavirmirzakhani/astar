@@ -11,7 +11,7 @@ class Sprite {
 	unsigned int width;
 	unsigned int height;
 
-	unsigned char* render(int sprite_x, int sprite_y);
+	unsigned char* render(unsigned int sprite_Xy, unsigned int sprite_y);
 
 	template <class Archive> void serialize(Archive& archive) { archive(sprite_buffer, width, height); }
 };

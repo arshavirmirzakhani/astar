@@ -1,4 +1,5 @@
 #pragma once
+#include "default_palletes.h"
 #include "global.h"
 #include "object.h"
 #include "scene.h"
@@ -16,6 +17,8 @@ struct Color {
 
 struct Pallete {
 	Color colors[127];
+
+	void load_pallete_from_hex(std::string input_data);
 
 	template <class Archive> void serialize(Archive& archive) { archive(colors); }
 };
