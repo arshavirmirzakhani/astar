@@ -10,19 +10,3 @@ Sprite::Sprite(unsigned int width, unsigned int height) {
 }
 
 Sprite::~Sprite() {}
-
-unsigned char* Sprite::render(unsigned int sprite_Xy, unsigned int sprite_y) {
-
-	std::vector<unsigned char> buffer;
-
-	for (unsigned int y = 0; y < SCREEN_HEIGHT; y++) {
-		for (unsigned int x = 0; x < SCREEN_WIDTH; x++) {
-			if (x >= sprite_Xy && x <= sprite_Xy + this->width && y >= sprite_y &&
-			    y <= sprite_y + this->height) {
-				buffer.push_back(this->sprite_buffer[(y * width) + x]);
-			}
-		}
-	}
-
-	return buffer.data();
-}

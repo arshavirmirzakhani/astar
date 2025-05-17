@@ -59,12 +59,18 @@ int main(int, char**) {
 	ImVec4 clear_color = ImVec4(0.45f, 0.55f, 0.60f, 1.00f);
 	bool done	   = false;
 
+	// ======
+
 	Sprite sprite(1, 1);
 	Pallete pallete;
 
 	Game game("test");
 
 	pallete.load_pallete_from_hex(nes);
+
+	static SDL_Texture* sprite_viewer_texture = nullptr;
+
+	// ======
 
 	while (!done) {
 		SDL_Event event;
@@ -102,7 +108,7 @@ int main(int, char**) {
 			ImGuiID dockspace_id = ImGui::GetID("MainDockspace");
 			ImGui::DockSpace(dockspace_id, ImVec2(0.0f, 0.0f), ImGuiDockNodeFlags_None);
 
-			show_sprite_viewer(sprite, pallete, pallete_choosen_color);
+			show_sprite_viewer(renderer, sprite, pallete, pallete_choosen_color);
 		}
 		ImGui::End();
 
