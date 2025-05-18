@@ -6,6 +6,7 @@
 #include <stb_image.h>
 
 int main(int argc, char* argv[]) {
+	SDL_FRect rect;
 
 	Game game("test");
 
@@ -27,8 +28,6 @@ int main(int argc, char* argv[]) {
 		sprite.load_sprite_from_image(game.color_pallets[game.current_pallete], image, false);
 		printf("3 channel\n");
 	}
-
-	SDL_FRect rect;
 
 	float sprite_y = 20;
 	float sprite_x = 20;

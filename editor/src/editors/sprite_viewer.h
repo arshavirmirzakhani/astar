@@ -14,16 +14,17 @@ static ImVec2 panStartOffset;
 
 SDL_Texture* preview_textue;
 
+SDL_FRect rect;
+
 ImVec4 toImVec4(unsigned char& r, unsigned char& g, unsigned char& b, unsigned char& a) {
 	return ImVec4(r / 255.0f, g / 255.0f, b / 255.0f, a / 255.0f);
 }
 
 void show_sprite_viewer(SDL_Renderer* renderer, Sprite& sprite, Pallete& pallete, unsigned int& choosen_color_index) {
-	static float zoom   = 1.0f;
-	const float minZoom = 0.1f;
-	const float maxZoom = 100.0f;
-
-	zoom = std::clamp(zoom, minZoom, maxZoom);
+	static float zoom     = 1.0f;
+	static float prevZoom = zoom;
+	const float minZoom   = 0.1f;
+	const float maxZoom   = 100.0f;
 
 	ImGui::Begin("sprite viewer");
 
@@ -55,23 +56,35 @@ void show_sprite_viewer(SDL_Renderer* renderer, Sprite& sprite, Pallete& pallete
 	ImGui::SameLine();
 
 	// === Render Sprite ===
-
 	preview_textue = SDL_CreateTexture(renderer, SDL_PIXELFORMAT_RGBA8888, SDL_TEXTUREACCESS_TARGET,
-					   sprite.width * 8, sprite.height * 8);
+					   (int)(sprite.width * 8), (int)(sprite.height * 8));
 
+	SDL_SetTextureScaleMode(preview_textue, SDL_SCALEMODE_NEAREST);
 	SDL_SetTextureBlendMode(preview_textue, SDL_BLENDMODE_BLEND);
 
 	SDL_Texture* oldTarget = SDL_GetRenderTarget(renderer);
-
 	SDL_SetRenderTarget(renderer, preview_textue);
 
-	// Clear the texture to a color (e.g., greenish)
-	SDL_SetRenderDrawColor(renderer, 30, 200, 150, 255);
-	SDL_RenderClear(renderer);
+	for (unsigned int y = 0; y < sprite.height * 8; y++) {
+		for (unsigned int x = 0; x < sprite.width * 8; x++) {
+			if (sprite.sprite_buffer[y * sprite.width * 8 + x] == 0) {
+				continue;
+			} else {
+				Color color = pallete.colors[sprite.sprite_buffer[y * sprite.width * 8 + x]];
+				if (color.a == 0)
+					continue;
+
+				SDL_SetRenderDrawColor(renderer, color.r, color.g, color.b, color.a);
+			}
+
+			rect = {(float)x, (float)y, 1, 1};
+			SDL_RenderFillRect(renderer, &rect);
+		}
+	}
 
 	SDL_SetRenderTarget(renderer, oldTarget);
 
-	// === Sprite Viewer ===
+	// === Sprite Viewer UI ===
 	ImGui::BeginGroup();
 	ImGui::Text("zoom");
 	ImGui::VSliderFloat("##ZoomSlider", ImVec2(40, 200), &zoom, minZoom, maxZoom, "%.1fx");
@@ -79,7 +92,6 @@ void show_sprite_viewer(SDL_Renderer* renderer, Sprite& sprite, Pallete& pallete
 
 	ImGui::SameLine();
 
-	// Size of the scrollable/interactive area
 	ImVec2 childSize = ImGui::GetContentRegionAvail();
 	ImGui::BeginChild("SpriteView", childSize, true,
 			  ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoScrollWithMouse);
@@ -87,16 +99,29 @@ void show_sprite_viewer(SDL_Renderer* renderer, Sprite& sprite, Pallete& pallete
 	ImVec2 canvasPos  = ImGui::GetCursorScreenPos();    // Top-left of the child
 	ImVec2 canvasSize = ImGui::GetContentRegionAvail(); // Size of the drawable area
 
-	ImGui::InvisibleButton("canvas", canvasSize, ImGuiButtonFlags_MouseButtonLeft);
+	// Handle mouse wheel zoom
+	float wheel = ImGui::GetIO().MouseWheel;
+	if (wheel != 0.0f && ImGui::IsWindowHovered(ImGuiHoveredFlags_ChildWindows)) {
+		prevZoom = zoom;
+		zoom *= (wheel > 0) ? 1.1f : 0.9f;
+		zoom = std::clamp(zoom, minZoom, maxZoom);
 
-	// Handle panning with mouse drag
+		// Zoom from center
+		ImVec2 canvasCenter = ImVec2(canvasSize.x * 0.5f, canvasSize.y * 0.5f);
+		float zoomFactor    = zoom / prevZoom;
+		panOffset.x	    = canvasCenter.x + (panOffset.x - canvasCenter.x) * zoomFactor;
+		panOffset.y	    = canvasCenter.y + (panOffset.y - canvasCenter.y) * zoomFactor;
+	}
+
+	// Panning logic
+	ImGui::InvisibleButton("canvas", canvasSize, ImGuiButtonFlags_MouseButtonLeft);
 	if (ImGui::IsItemActive() && ImGui::IsMouseDragging(ImGuiMouseButton_Left)) {
 		ImVec2 dragDelta = ImGui::GetIO().MouseDelta;
 		panOffset.x += dragDelta.x;
 		panOffset.y += dragDelta.y;
 	}
 
-	// Draw the image at the pan offset
+	// Draw sprite texture
 	ImVec2 spriteSize = ImVec2(zoom * sprite.width * 8, zoom * sprite.height * 8);
 	ImVec2 imagePos	  = ImVec2(canvasPos.x + panOffset.x, canvasPos.y + panOffset.y);
 
@@ -104,6 +129,5 @@ void show_sprite_viewer(SDL_Renderer* renderer, Sprite& sprite, Pallete& pallete
 					     ImVec2(imagePos.x + spriteSize.x, imagePos.y + spriteSize.y));
 
 	ImGui::EndChild();
-
-	ImGui::End(); // window
+	ImGui::End();
 }

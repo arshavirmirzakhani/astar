@@ -9,6 +9,8 @@
 #include <iostream>
 #include <stdio.h>
 #include <string>
+#define STB_IMAGE_IMPLEMENTATION
+#include <stb_image.h>
 
 // Main code
 int main(int, char**) {
@@ -61,12 +63,20 @@ int main(int, char**) {
 
 	// ======
 
-	Sprite sprite(1, 1);
+	Sprite sprite(36, 24);
 	Pallete pallete;
+	pallete.load_pallete_from_hex(aap_64);
 
-	Game game("test");
+	int w, h, comp;
+	unsigned char* image = stbi_load("jack.png", &w, &h, &comp, 0);
 
-	pallete.load_pallete_from_hex(nes);
+	if (comp == 4) {
+		sprite.load_sprite_from_image(pallete, image, true);
+		printf("4 channel\n");
+	} else {
+		sprite.load_sprite_from_image(pallete, image, false);
+		printf("3 channel\n");
+	}
 
 	static SDL_Texture* sprite_viewer_texture = nullptr;
 
