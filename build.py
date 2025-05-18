@@ -18,18 +18,14 @@ if not os.path.isdir(build_dir):
 
 os.chdir(build_dir)
 
-cache_file = "CMakeCache.txt"
-if os.path.exists(cache_file):
-    os.remove(cache_file)
-
 try:
-    subprocess.run(["cmake"] + cmake_args, check=True)
+    subprocess.run(["cmake"] + cmake_args)
 except subprocess.CalledProcessError as e:
     print("CMake configuration failed:", e)
     sys.exit(1)
 
 try:
-    subprocess.run(["cmake", "--build", ".", "--config", build_config], check=True)
+    subprocess.run(["cmake", "--build", ".", "--config", build_config])
 except subprocess.CalledProcessError as e:
     print("Build failed:", e)
     sys.exit(1)
