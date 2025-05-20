@@ -16,13 +16,10 @@ class Game {
 	char engine_version[3] = {0};
 
 	std::map<std::string, int> object_types;
-
 	std::map<std::string, Scene> scenes;
-
+	Pallete pallete;
+	std::map<std::string, Sprite> sprites;
 	std::vector<unsigned char> screen_buffer;
-
-	std::string current_pallete;
-	std::map<std::string, Pallete> color_pallets;
 
 	void process();
 	void render();
@@ -30,6 +27,6 @@ class Game {
 	void add_object(Object object);
 
 	template <class Archive> void serialize(Archive& archive) {
-		archive(name, engine_version, object_types, current_pallete, color_pallets);
+		archive(name, engine_version, object_types, scenes, sprites, pallete);
 	}
 };

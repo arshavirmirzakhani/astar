@@ -9,6 +9,11 @@ class Object {
 	Object(std::string type);
 	~Object();
 
+	Sprite render();
+
+	float position_x;
+	float position_y;
+
 	std::string type_name;
 	unsigned int current_frame;
 	int frame_per_tick;

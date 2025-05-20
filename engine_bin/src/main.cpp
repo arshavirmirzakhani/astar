@@ -10,27 +10,29 @@ int main(int argc, char* argv[]) {
 
 	Game game("test");
 
-	Pallete pallete;
-	pallete.load_pallete_from_hex(aap_64);
+	game.pallete.load_pallete_from_hex(aap_64);
 
-	game.color_pallets["default"] = pallete;
-	game.current_pallete	      = "default";
-
+	Object object("type");
 	Sprite sprite(1, 1);
 
 	int w, h, comp;
-	unsigned char* image = stbi_load("testimg.png", &w, &h, &comp, 0);
+	unsigned char* image = stbi_load("", &w, &h, &comp, 0);
 
 	if (comp == 4) {
-		sprite.load_sprite_from_image(game.color_pallets[game.current_pallete], image, true);
+		sprite.load_sprite_from_image(game.pallete, image, true);
 		printf("4 channel\n");
 	} else {
-		sprite.load_sprite_from_image(game.color_pallets[game.current_pallete], image, false);
+		sprite.load_sprite_from_image(game.pallete, image, false);
 		printf("3 channel\n");
 	}
 
-	float sprite_y = 20;
-	float sprite_x = 20;
+	object.current_animation_state = "first";
+	object.all_sprites["first"].push_back(sprite);
+	object.current_frame = 0;
+
+	Scene scene;
+	scene.objects.push_back(object);
+	game.scenes["test"] = scene;
 
 	if (!SDL_Init(SDL_INIT_VIDEO | SDL_INIT_GAMEPAD | SDL_INIT_GAMEPAD)) {
 		printf("Error: SDL_Init(): %s\n", SDL_GetError());
@@ -42,25 +44,26 @@ int main(int argc, char* argv[]) {
 	SDL_Window* window     = SDL_CreateWindow("test", 640, 480, SDL_WINDOW_RESIZABLE);
 	SDL_Renderer* renderer = SDL_CreateRenderer(window, NULL);
 
+	SDL_SetRenderVSync(renderer, SDL_RENDERER_VSYNC_ADAPTIVE);
 	SDL_SetRenderLogicalPresentation(renderer, SCREEN_WIDTH, SCREEN_HEIGHT, SDL_LOGICAL_PRESENTATION_LETTERBOX);
 
 	SDL_Event e;
 	bool quit = false;
 
-	unsigned int previous_ticks = SDL_GetTicks();
-	float delta_time	    = 0.0f;
+	int previous_ticks = SDL_GetTicks();
+	float delta_time   = 0.0f;
 
-	unsigned int start_time	 = SDL_GetTicks();
-	unsigned int frame_count = 0;
+	int start_time	= SDL_GetTicks();
+	int frame_count = 0;
 
 	while (!quit) {
 
-		unsigned int current_time = SDL_GetTicks();
+		int current_time = SDL_GetTicks();
 		frame_count++;
 
-		unsigned int current_ticks = SDL_GetTicks();
-		delta_time     = (current_ticks - previous_ticks) / 1000.0f; // Convert milliseconds to seconds
-		previous_ticks = current_ticks;
+		int current_ticks = SDL_GetTicks();
+		delta_time	  = (current_ticks - previous_ticks) / 1000.0f; // Convert milliseconds to seconds
+		previous_ticks	  = current_ticks;
 
 		while (SDL_PollEvent(&e)) {
 			if (e.type == SDL_EVENT_QUIT) {
@@ -76,36 +79,38 @@ int main(int argc, char* argv[]) {
 		const bool* keystate = SDL_GetKeyboardState(NULL);
 
 		if (keystate[SDL_SCANCODE_LEFT]) {
-			sprite_x -= 100 * delta_time;
+			game.scenes["test"].objects[0].position_x -= 100 * delta_time;
 		}
 
 		if (keystate[SDL_SCANCODE_RIGHT]) {
-			sprite_x += 100 * delta_time;
+			game.scenes["test"].objects[0].position_x += 100 * delta_time;
 		}
 
 		if (keystate[SDL_SCANCODE_UP]) {
-			sprite_y -= 100 * delta_time;
+			game.scenes["test"].objects[0].position_y -= 100 * delta_time;
 		}
 
 		if (keystate[SDL_SCANCODE_DOWN]) {
-			sprite_y += 100 * delta_time;
+			game.scenes["test"].objects[0].position_y += 100 * delta_time;
 		}
 
-		for (unsigned int y = 0; y < sprite.height * 8; y++) {
-			for (unsigned int x = 0; x < sprite.width * 8; x++) {
-				if (sprite.sprite_buffer[y * sprite.width * 8 + x] == 0) {
+		game.render();
+
+		for (unsigned int y = 0; y < SCREEN_HEIGHT; y++) {
+			for (unsigned int x = 0; x < SCREEN_WIDTH; x++) {
+				if (game.screen_buffer[y * SCREEN_WIDTH + x] == 0) {
 					continue;
 				} else {
-					Color color = game.color_pallets[game.current_pallete]
-							  .colors[sprite.sprite_buffer[y * sprite.width * 8 + x]];
-					SDL_SetRenderDrawColor(renderer, color.r, color.g, color.b, color.a);
+					Color color = game.pallete.colors[game.screen_buffer[y * SCREEN_WIDTH + x]];
 
 					if (color.a == 0) {
 						continue;
 					}
+
+					SDL_SetRenderDrawColor(renderer, color.r, color.g, color.b, color.a);
 				}
 
-				rect = {(float)x * 2 + (sprite_x), (float)y * 2 + (sprite_y), 2, 2};
+				rect = {(float)x, (float)y, 1, 1};
 				SDL_RenderFillRect(renderer, &rect);
 			}
 		}

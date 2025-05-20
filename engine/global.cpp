@@ -1,4 +1,5 @@
 #include "global.h"
+#include <cstring>
 
 unsigned char hex_component_to_uchar(const std::string& hex) {
 	return static_cast<unsigned char>(std::stoi(hex, nullptr, 16));
@@ -26,6 +27,13 @@ void Pallete::load_pallete_from_hex(std::string input_data) {
 	std::stringstream data(input_data);
 	std::string segment;
 	std::vector<std::string> hexlist;
+
+	for (int i = 0; i < 128; ++i) {
+		this->colors[i].r = 0;
+		this->colors[i].g = 0;
+		this->colors[i].b = 0;
+		this->colors[i].a = 0;
+	}
 
 	while (std::getline(data, segment, ' ')) {
 		hexlist.push_back(segment);

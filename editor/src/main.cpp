@@ -1,3 +1,4 @@
+#include "editors/globals.h"
 #include "editors/sprite_viewer.h"
 #include "font.h"
 #include "imgui/imgui.h"
@@ -9,13 +10,12 @@
 #include <iostream>
 #include <stdio.h>
 #include <string>
-#define STB_IMAGE_IMPLEMENTATION
-#include <stb_image.h>
+
+static bool is_open_sprite_viewer;
+static bool is_open_scene_editor;
 
 // Main code
 int main(int, char**) {
-
-	unsigned int pallete_choosen_color = 0;
 
 	if (!SDL_Init(SDL_INIT_VIDEO | SDL_INIT_GAMEPAD)) {
 		printf("Error: SDL_Init(): %s\n", SDL_GetError());
@@ -24,7 +24,7 @@ int main(int, char**) {
 
 	// Create window with SDL_Renderer graphics context
 	SDL_WindowFlags window_flags = SDL_WINDOW_RESIZABLE | SDL_WINDOW_HIDDEN | SDL_WINDOW_HIGH_PIXEL_DENSITY;
-	SDL_Window* window = SDL_CreateWindow("Dear ImGui SDL3+SDL_Renderer example", 1280, 720, window_flags);
+	SDL_Window* window	     = SDL_CreateWindow("Astar editor", 1280, 720, window_flags);
 	if (window == nullptr) {
 		printf("Error: SDL_CreateWindow(): %s\n", SDL_GetError());
 		return -1;
@@ -63,24 +63,14 @@ int main(int, char**) {
 
 	// ======
 
-	Sprite sprite(36, 24);
-	Pallete pallete;
-	pallete.load_pallete_from_hex(aap_64);
-
-	int w, h, comp;
-	unsigned char* image = stbi_load("jack.png", &w, &h, &comp, 0);
-
-	if (comp == 4) {
-		sprite.load_sprite_from_image(pallete, image, true);
-		printf("4 channel\n");
-	} else {
-		sprite.load_sprite_from_image(pallete, image, false);
-		printf("3 channel\n");
-	}
+	Game game("test");
+	game.pallete.load_pallete_from_hex(aap_64);
 
 	static SDL_Texture* sprite_viewer_texture = nullptr;
 
 	// ======
+
+	file_conf.path = ".";
 
 	while (!done) {
 		SDL_Event event;
@@ -118,7 +108,32 @@ int main(int, char**) {
 			ImGuiID dockspace_id = ImGui::GetID("MainDockspace");
 			ImGui::DockSpace(dockspace_id, ImVec2(0.0f, 0.0f), ImGuiDockNodeFlags_None);
 
-			show_sprite_viewer(renderer, sprite, pallete, pallete_choosen_color);
+			ImGui::Begin("Editors");
+			ImGui::Text("A-STAR engine editor");
+			ImGui::Text("by Arshavir Mirzakhani");
+
+			ImGui::SeparatorText("Project");
+
+			ImGui::Button("New");
+			ImGui::Button("Open");
+			ImGui::Button("Save");
+			ImGui::Button("Save as");
+
+			ImGui::SeparatorText("Editors");
+
+			if (ImGui::Button("View sprites")) {
+				is_open_sprite_viewer = (is_open_sprite_viewer) ? false : true;
+			}
+
+			if (ImGui::Button("Edit scenes")) {
+				is_open_scene_editor = (is_open_scene_editor) ? false : true;
+			}
+
+			ImGui::End();
+
+			if (is_open_sprite_viewer) {
+				show_sprite_viewer(game, renderer);
+			}
 		}
 		ImGui::End();
 

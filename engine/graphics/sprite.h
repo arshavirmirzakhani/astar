@@ -6,6 +6,7 @@ class Sprite {
       public:
 	std::vector<unsigned char> sprite_buffer;
 
+	Sprite();
 	Sprite(unsigned int width, unsigned int height);
 	~Sprite();
 

@@ -1,6 +1,7 @@
 #include "sprite.h"
 #include <iostream>
 
+Sprite::Sprite() {}
 Sprite::Sprite(unsigned int width, unsigned int height) {
 
 	this->width  = width;
@@ -24,7 +25,7 @@ void Sprite::load_sprite_from_image(Pallete pallete, unsigned char* data, bool i
 
 			for (unsigned char i = 1; i < 128 + 1; i++) {
 
-				if (i == 127) {
+				if (i == 128) {
 					this->sprite_buffer[index] = 0;
 					break;
 				}
