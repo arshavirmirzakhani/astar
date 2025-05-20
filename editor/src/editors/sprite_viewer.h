@@ -183,7 +183,7 @@ void show_sprite_viewer(Game& game, SDL_Renderer* renderer) {
 	}
 
 	if (ImGuiFileDialog::Instance()->Display("choose_file_dialog_image")) {
-		if (ImGuiFileDialog::Instance()->IsOk()) { // action if OK
+		if (ImGuiFileDialog::Instance()->IsOk()) {
 			std::string filePathName = ImGuiFileDialog::Instance()->GetFilePathName();
 
 			image_path = filePathName;
@@ -319,7 +319,6 @@ void show_sprite_viewer(Game& game, SDL_Renderer* renderer) {
 		panOffset.x += dragDelta.x;
 		panOffset.y += dragDelta.y;
 	}
-
 	// Draw sprite texture
 	ImVec2 spriteSize =
 	    ImVec2(zoom * game.sprites[selected_sprite].width * 8, zoom * game.sprites[selected_sprite].height * 8);

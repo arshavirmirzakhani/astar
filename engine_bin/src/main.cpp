@@ -56,6 +56,22 @@ int main(int argc, char* argv[]) {
 	uint64_t start_time = SDL_GetTicks();
 	int frame_count	    = 0;
 
+	{
+		std::fstream fs("res.astar", std::ios::out | std::ios::binary);
+
+		if (!fs) {
+			std::cerr << "Failed to open file for writing!\n";
+			return -1;
+		}
+
+		cereal::BinaryOutputArchive archive(fs);
+
+		archive(game);
+
+		fs.flush();
+		fs.close();
+	}
+
 	while (!quit) {
 
 		uint64_t current_time = SDL_GetTicks();

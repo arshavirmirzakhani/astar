@@ -13,8 +13,8 @@ void Game::render() {
 	Object& current_object = this->scenes["test"].objects[0];
 	Sprite sprite	       = current_object.render();
 
-	int sprite_x_start = current_object.position_x;
-	int sprite_y_start = current_object.position_y;
+	int sprite_x_start = (int)roundf(current_object.position_x);
+	int sprite_y_start = (int)roundf(current_object.position_y);
 
 	int sprite_pixel_width	= sprite.width * 8;
 	int sprite_pixel_height = sprite.height * 8;

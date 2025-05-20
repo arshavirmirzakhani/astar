@@ -6,3 +6,5 @@
 #include <stb_image.h>
 
 IGFD::FileDialogConfig file_conf;
+
+IGFD::FileDialogConfig file_save_conf;

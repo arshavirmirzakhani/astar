@@ -6,7 +6,9 @@
 #include "imgui/imgui_impl_sdlrenderer3.h"
 #include "imgui_theme_setup.h"
 #include <SDL3/SDL.h>
+#include <cereal/archives/binary.hpp>
 #include <engine/game.h>
+#include <fstream>
 #include <iostream>
 #include <stdio.h>
 #include <string>
@@ -50,9 +52,11 @@ int main(int, char**) {
 	io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;     // Enable Docking
 	io.ConfigWindowsMoveFromTitleBarOnly = true;
 
-	ImFont* font   = io.Fonts->AddFontFromMemoryTTF((void*)font_data, font_size, 20.0f);
-	io.FontDefault = font;
-	// Setup Dear ImGui style
+	ImFontConfig font_config;
+	font_config.FontDataOwnedByAtlas = false;
+
+	ImFont* font = io.Fonts->AddFontFromMemoryTTF((void*)font_data, font_size, 20.0f, &font_config);
+	//  Setup Dear ImGui style
 	SetupImGuiStyle();
 
 	ImGui_ImplSDL3_InitForSDLRenderer(window, renderer);
@@ -62,15 +66,17 @@ int main(int, char**) {
 	bool done	   = false;
 
 	// ======
-
-	Game game("test");
-	game.pallete.load_pallete_from_hex(aap_64);
-
 	static SDL_Texture* sprite_viewer_texture = nullptr;
-
+	Game game("New game");
+	game.pallete.load_pallete_from_hex(aap_64);
 	// ======
 
 	file_conf.path = ".";
+
+	file_save_conf.path		 = ".";
+	file_save_conf.fileName		 = "project.astar";
+	file_save_conf.countSelectionMax = 1;
+	file_save_conf.flags		 = ImGuiFileDialogFlags_ConfirmOverwrite;
 
 	while (!done) {
 		SDL_Event event;
@@ -115,9 +121,42 @@ int main(int, char**) {
 			ImGui::SeparatorText("Project");
 
 			ImGui::Button("New");
-			ImGui::Button("Open");
-			ImGui::Button("Save");
-			ImGui::Button("Save as");
+
+			if (ImGui::Button("Open")) {
+				ImGuiFileDialog::Instance()->OpenDialog("choose_file_dialog_project_file",
+									"Choose project file", ".astar", file_conf);
+			}
+
+			if (ImGuiFileDialog::Instance()->Display("choose_file_dialog_project_file")) {
+				if (ImGuiFileDialog::Instance()->IsOk()) {
+					std::ifstream file(ImGuiFileDialog::Instance()->GetFilePathName(),
+							   std::ios::binary);
+
+					cereal::BinaryInputArchive iarchive(file);
+
+					iarchive(game);
+
+					selected_sprite = game.sprites.begin()->first;
+				}
+				ImGuiFileDialog::Instance()->Close();
+			}
+			if (ImGui::Button("Save as")) {
+
+				ImGuiFileDialog::Instance()->OpenDialog("save_project_file_dialog", "Save", ".astar",
+									file_conf);
+			}
+
+			if (ImGuiFileDialog::Instance()->Display("save_project_file_dialog")) {
+				if (ImGuiFileDialog::Instance()->IsOk()) {
+					std::ofstream file(ImGuiFileDialog::Instance()->GetFilePathName(),
+							   std::ios::binary);
+
+					cereal::BinaryOutputArchive oarchive(file);
+
+					oarchive(game);
+				}
+				ImGuiFileDialog::Instance()->Close();
+			}
 
 			ImGui::SeparatorText("Editors");
 
@@ -147,9 +186,6 @@ int main(int, char**) {
 		SDL_RenderPresent(renderer);
 	}
 
-	// Cleanup
-	// [If using SDL_MAIN_USE_CALLBACKS: all code below would likely be your
-	// SDL_AppQuit() function]
 	ImGui_ImplSDLRenderer3_Shutdown();
 	ImGui_ImplSDL3_Shutdown();
 	ImGui::DestroyContext();
