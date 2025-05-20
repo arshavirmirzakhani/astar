@@ -11,7 +11,7 @@ cmake_args = [
     "-DSDL_STATIC=ON",
     "-DSDL_SHARED=OFF"
 ]
-build_config = "Release"
+build_config = "Debug"
 
 if not os.path.isdir(build_dir):
     os.makedirs(build_dir)

@@ -16,7 +16,7 @@ int main(int argc, char* argv[]) {
 	Sprite sprite(1, 1);
 
 	int w, h, comp;
-	unsigned char* image = stbi_load("", &w, &h, &comp, 0);
+	unsigned char* image = stbi_load("../testimg.png", &w, &h, &comp, 0);
 
 	if (comp == 4) {
 		sprite.load_sprite_from_image(game.pallete, image, true);
@@ -31,7 +31,7 @@ int main(int argc, char* argv[]) {
 	object.current_frame = 0;
 
 	Scene scene;
-	scene.objects.push_back(object);
+	scene.objects.push_back(std::move(object));
 	game.scenes["test"] = scene;
 
 	if (!SDL_Init(SDL_INIT_VIDEO | SDL_INIT_GAMEPAD | SDL_INIT_GAMEPAD)) {
@@ -50,20 +50,20 @@ int main(int argc, char* argv[]) {
 	SDL_Event e;
 	bool quit = false;
 
-	int previous_ticks = SDL_GetTicks();
-	float delta_time   = 0.0f;
+	uint64_t previous_ticks = SDL_GetTicks();
+	float delta_time	= 0.0f;
 
-	int start_time	= SDL_GetTicks();
-	int frame_count = 0;
+	uint64_t start_time = SDL_GetTicks();
+	int frame_count	    = 0;
 
 	while (!quit) {
 
-		int current_time = SDL_GetTicks();
+		uint64_t current_time = SDL_GetTicks();
 		frame_count++;
 
-		int current_ticks = SDL_GetTicks();
-		delta_time	  = (current_ticks - previous_ticks) / 1000.0f; // Convert milliseconds to seconds
-		previous_ticks	  = current_ticks;
+		uint64_t current_ticks = SDL_GetTicks();
+		delta_time	       = (current_ticks - previous_ticks) / 1000.0f; // Convert milliseconds to seconds
+		previous_ticks	       = current_ticks;
 
 		while (SDL_PollEvent(&e)) {
 			if (e.type == SDL_EVENT_QUIT) {
@@ -79,19 +79,19 @@ int main(int argc, char* argv[]) {
 		const bool* keystate = SDL_GetKeyboardState(NULL);
 
 		if (keystate[SDL_SCANCODE_LEFT]) {
-			game.scenes["test"].objects[0].position_x -= 100 * delta_time;
+			game.scenes["test"].objects[0].position_x -= 50 * delta_time;
 		}
 
 		if (keystate[SDL_SCANCODE_RIGHT]) {
-			game.scenes["test"].objects[0].position_x += 100 * delta_time;
+			game.scenes["test"].objects[0].position_x += 50 * delta_time;
 		}
 
 		if (keystate[SDL_SCANCODE_UP]) {
-			game.scenes["test"].objects[0].position_y -= 100 * delta_time;
+			game.scenes["test"].objects[0].position_y -= 50 * delta_time;
 		}
 
 		if (keystate[SDL_SCANCODE_DOWN]) {
-			game.scenes["test"].objects[0].position_y += 100 * delta_time;
+			game.scenes["test"].objects[0].position_y += 50 * delta_time;
 		}
 
 		game.render();

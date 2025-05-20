@@ -1,6 +1,10 @@
 #include "object.h"
 
-Object::Object(std::string type) { this->type_name = type; }
+Object::Object(std::string type) {
+	this->type_name	 = type;
+	this->position_x = 0;
+	this->position_y = 0;
+}
 
 Object::~Object() {}
 

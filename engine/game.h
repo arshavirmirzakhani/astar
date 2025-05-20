@@ -27,6 +27,6 @@ class Game {
 	void add_object(Object object);
 
 	template <class Archive> void serialize(Archive& archive) {
-		archive(name, engine_version, object_types, scenes, sprites, pallete);
+		archive(name, engine_version, object_types, scenes, pallete, sprites);
 	}
 };
