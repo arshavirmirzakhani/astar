@@ -1,6 +1,8 @@
 #include "game.h"
 
 Game::Game(std::string name) {
+	this->name = name;
+
 	this->screen_buffer	 = std::vector<unsigned char>(SCREEN_WIDTH * SCREEN_HEIGHT, 0);
 	this->sprites["default"] = Sprite(1, 1);
 }

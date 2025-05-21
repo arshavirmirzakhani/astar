@@ -16,6 +16,8 @@
 static bool is_open_sprite_viewer;
 static bool is_open_scene_editor;
 
+static char new_project_name[255] = "";
+
 // Main code
 int main(int, char**) {
 
@@ -118,9 +120,38 @@ int main(int, char**) {
 			ImGui::Text("A-STAR engine editor");
 			ImGui::Text("by Arshavir Mirzakhani");
 
+			ImGui::TextColored(ImVec4(1.0f, 1.0f, 0.0f, 1.0f),
+					   std::string("Editing project: " + game.name).c_str());
 			ImGui::SeparatorText("Project");
 
-			ImGui::Button("New");
+			if (ImGui::Button("New")) {
+				ImGui::OpenPopup("New project");
+			}
+
+			if (ImGui::BeginPopup("New project")) {
+
+				ImGui::InputText("sprite name", new_project_name, 255);
+
+				if (strlen(new_project_name) == 0) {
+					ImGui::TextColored(ImVec4(1.0f, 0.0f, 0.0f, 1.0f), "project name is required");
+				}
+
+				else if (ImGui::Button("create")) {
+					game = Game(new_project_name);
+					game.pallete.load_pallete_from_hex(aap_64);
+
+					selected_sprite = game.sprites.begin()->first;
+
+					ImGui::CloseCurrentPopup();
+				}
+
+				ImGui::SameLine();
+				if (ImGui::Button("cancel")) {
+					ImGui::CloseCurrentPopup();
+				}
+
+				ImGui::EndPopup();
+			}
 
 			if (ImGui::Button("Open")) {
 				ImGuiFileDialog::Instance()->OpenDialog("choose_file_dialog_project_file",

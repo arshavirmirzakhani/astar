@@ -23,7 +23,7 @@ std::string selected_sprite = "default";
 SDL_Texture* preview_textue;
 SDL_FRect rect;
 
-static char new_sprite_name[256] = "";
+static char new_sprite_name[255] = "";
 
 ImVec4 toImVec4(unsigned char& r, unsigned char& g, unsigned char& b, unsigned char& a) {
 	return ImVec4(r / 255.0f, g / 255.0f, b / 255.0f, a / 255.0f);
