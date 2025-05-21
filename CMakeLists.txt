@@ -21,4 +21,13 @@ add_executable(astar_editor ${SOURCES_EDITOR})
 target_link_libraries(astar_editor PRIVATE SDL3-static)
 target_link_directories(astar_editor PRIVATE ${CMAKE_BINARY_DIR}/vendor/SDL/Debug)
 
-target_include_directories(astar_editor PRIVATE ${PROJECT_SOURCE_DIR} ${PROJECT_SOURCE_DIR}/vendor/SDL3/ ${PROJECT_SOURCE_DIR}/vendor/gzip ${PROJECT_SOURCE_DIR}/vendor/ ${PROJECT_SOURCE_DIR}/editor/src ${PROJECT_SOURCE_DIR}/editor/src/imgui)
+target_include_directories(astar_editor PRIVATE ${PROJECT_SOURCE_DIR}
+ ${PROJECT_SOURCE_DIR}/vendor/SDL3/
+ ${PROJECT_SOURCE_DIR}/vendor/gzip 
+ ${PROJECT_SOURCE_DIR}/vendor/ 
+ ${PROJECT_SOURCE_DIR}/editor/src 
+ ${PROJECT_SOURCE_DIR}/editor/src/imgui
+ ${PROJECT_SOURCE_DIR}/editor/src/imgui/imnodeflow/include
+)
+
+target_compile_definitions(astar_editor PRIVATE IMGUI_DEFINE_MATH_OPERATORS)
