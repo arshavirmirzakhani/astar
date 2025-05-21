@@ -13,7 +13,7 @@ void Game::render() {
 	this->screen_buffer = std::vector<unsigned char>(SCREEN_WIDTH * SCREEN_HEIGHT, 0);
 
 	Object& current_object = this->scenes["test"].objects[0];
-	Sprite sprite	       = current_object.render();
+	Sprite sprite	       = this->sprites[current_object.get_sprite_name()];
 
 	int sprite_x_start = (int)roundf(current_object.position_x);
 	int sprite_y_start = (int)roundf(current_object.position_y);

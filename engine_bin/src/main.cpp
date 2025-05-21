@@ -27,8 +27,10 @@ int main(int argc, char* argv[]) {
 	}
 
 	object.current_animation_state = "first";
-	object.all_sprites["first"].push_back(sprite);
+	object.all_sprites["first"].push_back("test");
 	object.current_frame = 0;
+
+	game.sprites["test"] = sprite;
 
 	Scene scene;
 	scene.objects.push_back(std::move(object));

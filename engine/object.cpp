@@ -14,4 +14,4 @@ Object::Object() {
 
 Object::~Object() {}
 
-Sprite Object::render() { return this->all_sprites[this->current_animation_state][this->current_frame]; }
+std::string Object::get_sprite_name() { return this->all_sprites[this->current_animation_state][this->current_frame]; }
