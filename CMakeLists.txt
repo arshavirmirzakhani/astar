@@ -27,7 +27,5 @@ target_include_directories(astar_editor PRIVATE ${PROJECT_SOURCE_DIR}
  ${PROJECT_SOURCE_DIR}/vendor/ 
  ${PROJECT_SOURCE_DIR}/editor/src 
  ${PROJECT_SOURCE_DIR}/editor/src/imgui
- ${PROJECT_SOURCE_DIR}/editor/src/imgui/imnodeflow/include
 )
 
-target_compile_definitions(astar_editor PRIVATE IMGUI_DEFINE_MATH_OPERATORS)

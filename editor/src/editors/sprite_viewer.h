@@ -30,6 +30,7 @@ ImVec4 toImVec4(unsigned char& r, unsigned char& g, unsigned char& b, unsigned c
 }
 
 void regenerate_sprite_from_image(Sprite& sprite, Pallete& pallete) {
+
 	if (image_path.empty())
 		return;
 
@@ -73,6 +74,10 @@ void show_sprite_viewer(Game& game, SDL_Renderer* renderer) {
 	const float maxZoom   = 100.0f;
 
 	ImGui::Begin("sprite viewer");
+
+	if (ImGui::GetWindowSize().x <= 0 || ImGui::GetWindowSize().y <= 0) {
+		ImGui::SetWindowSize(ImVec2(500, 500));
+	}
 
 	ImGui::BeginGroup();
 
@@ -295,8 +300,14 @@ void show_sprite_viewer(Game& game, SDL_Renderer* renderer) {
 	ImGui::BeginChild("SpriteView", childSize, true,
 			  ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoScrollWithMouse);
 
-	ImVec2 canvasPos  = ImGui::GetCursorScreenPos();    // Top-left of the child
-	ImVec2 canvasSize = ImGui::GetContentRegionAvail(); // Size of the drawable area
+	ImVec2 canvasPos  = ImGui::GetCursorScreenPos();
+	ImVec2 canvasSize = ImGui::GetContentRegionAvail();
+
+	if (canvasSize.x <= 0.0f || canvasSize.y <= 0.0f) {
+		ImGui::EndChild();
+		ImGui::End();
+		return;
+	}
 
 	// Handle mouse wheel zoom
 	float wheel = ImGui::GetIO().MouseWheel;

@@ -8,6 +8,15 @@
 int main(int argc, char* argv[]) {
 	SDL_FRect rect;
 
+	LogicEngine engine;
+	LogicBlock print_block;
+
+	print_block.arguments.push_back(std::string("hello"));
+	print_block.type = PRINT;
+
+	engine.first_block = print_block;
+	engine.process();
+
 	Game game("test");
 
 	game.pallete.load_pallete_from_hex(aap_64);

@@ -1,4 +1,5 @@
 #include "editors/globals.h"
+#include "editors/logic_editor.h"
 #include "editors/sprite_viewer.h"
 #include "font.h"
 #include "imgui/imgui.h"
@@ -15,6 +16,7 @@
 
 static bool is_open_sprite_viewer;
 static bool is_open_scene_editor;
+static bool is_open_logic_editor;
 
 static char new_project_name[255] = "";
 
@@ -46,7 +48,9 @@ int main(int, char**) {
 
 	// Setup Dear ImGui context
 	IMGUI_CHECKVERSION();
+
 	ImGui::CreateContext();
+
 	ImGuiIO& io = ImGui::GetIO();
 	(void)io;
 	io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard; // Enable Keyboard Controls
@@ -199,10 +203,18 @@ int main(int, char**) {
 				is_open_scene_editor = (is_open_scene_editor) ? false : true;
 			}
 
+			if (ImGui::Button("Edit Logic")) {
+				is_open_logic_editor = (is_open_logic_editor) ? false : true;
+			}
+
 			ImGui::End();
 
 			if (is_open_sprite_viewer) {
 				show_sprite_viewer(game, renderer);
+			}
+
+			if (is_open_logic_editor) {
+				show_logic_editor();
 			}
 		}
 		ImGui::End();
@@ -219,6 +231,7 @@ int main(int, char**) {
 
 	ImGui_ImplSDLRenderer3_Shutdown();
 	ImGui_ImplSDL3_Shutdown();
+
 	ImGui::DestroyContext();
 
 	SDL_DestroyRenderer(renderer);
