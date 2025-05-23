@@ -1,3 +1,3 @@
 # A-STAR
 [![cross-platform build](https://github.com/arshavirmirzakhani/astar/actions/workflows/cmake-multi-platform.yml/badge.svg)](https://github.com/arshavirmirzakhani/astar/actions/workflows/cmake-multi-platform.yml)
- 
+ [![Emscripten Build](https://github.com/arshavirmirzakhani/astar/actions/workflows/emscripten-build.yml/badge.svg)](https://github.com/arshavirmirzakhani/astar/actions/workflows/emscripten-build.yml)
