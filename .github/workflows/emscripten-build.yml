@@ -44,8 +44,8 @@ jobs:
         source ~/.emsdk/emsdk_env.sh
         mkdir -p build
         cd build
-        cmake .. -DCMAKE_BUILD_TYPE=Release
-        emcc . -o output.html
+        emcmake cmake .. -DCMAKE_BUILD_TYPE=Release
+        emmake make
 
     - name: Upload WASM build artifacts
       uses: actions/upload-artifact@v4
