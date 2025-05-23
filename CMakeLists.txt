@@ -36,6 +36,9 @@ if(EMSCRIPTEN)
     # Use Emscripten's built-in SDL support
     set(CMAKE_EXECUTABLE_SUFFIX ".html")  # Generates .html/.wasm/.js
 
+    add_subdirectory(vendor/SDL3)
+    add_subdirectory(vendor/lua)
+
     target_link_options(astar PRIVATE -sUSE_SDL=3 -sALLOW_MEMORY_GROWTH=1 -sEXPORTED_RUNTIME_METHODS=['FS','callMain'] --preload-file assets)
     target_link_options(astar_editor PRIVATE -sUSE_SDL=3 -sALLOW_MEMORY_GROWTH=1 -sEXPORTED_RUNTIME_METHODS=['FS','callMain'] --preload-file assets)
 
