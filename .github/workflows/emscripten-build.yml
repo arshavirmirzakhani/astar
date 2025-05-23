@@ -32,7 +32,7 @@ jobs:
         cd ~/.emsdk
         ./emsdk install latest
         ./emsdk activate latest
-        echo "source ~/.emsdk/emsdk_env.sh" >> $GITHUB_ENV
+        source ./emsdk_env.sh
 
     - name: Load Emscripten environment
       run: |
