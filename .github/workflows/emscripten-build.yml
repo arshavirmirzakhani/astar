@@ -1,0 +1,57 @@
+name: Emscripten Build
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  emscripten-build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Setup Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.x'
+
+    - name: Cache emsdk
+      uses: actions/cache@v4
+      with:
+        path: |
+          ~/.emsdk
+          ~/.emscripten_cache
+        key: ${{ runner.os }}-emsdk-cache
+
+    - name: Install Emscripten SDK
+      run: |
+        git clone https://github.com/emscripten-core/emsdk.git ~/.emsdk
+        cd ~/.emsdk
+        ./emsdk install latest
+        ./emsdk activate latest
+        echo "source ~/.emsdk/emsdk_env.sh" >> $GITHUB_ENV
+
+    - name: Load Emscripten environment
+      run: |
+        source ~/.emsdk/emsdk_env.sh
+        emcc -v
+
+    - name: Configure and Build with Emscripten
+      run: |
+        source ~/.emsdk/emsdk_env.sh
+        mkdir -p build
+        cd build
+        emcmake cmake .. -DCMAKE_BUILD_TYPE=Release
+        emmake make -j$(nproc)
+
+    - name: Upload WASM build artifacts
+      uses: actions/upload-artifact@v4
+      with:
+        name: wasm-build
+        path: |
+          build/*.html
+          build/*.wasm
+          build/*.js
