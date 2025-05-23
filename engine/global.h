@@ -1,4 +1,5 @@
 #pragma once
+#include "keycodes.h"
 #include <cereal/archives/binary.hpp>
 #include <cereal/types/map.hpp>
 #include <cereal/types/memory.hpp>
@@ -8,7 +9,6 @@
 #include <math.h>
 #include <string>
 #include <vector>
-
 
 const int SCREEN_WIDTH	= 240;
 const int SCREEN_HEIGHT = 160;

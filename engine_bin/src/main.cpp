@@ -1,21 +1,17 @@
 #include <SDL3/SDL.h>
+#include <SDL3/SDL_gamepad.h>
 #include <cereal/archives/binary.hpp>
 #include <engine/game.h>
 #include <iostream>
 #define STB_IMAGE_IMPLEMENTATION
+#include "sdl3_input_helper.h"
 #include <stb_image.h>
+
+float MOUSE_POS_X = 0;
+float MOUSE_POS_Y = 0;
 
 int main(int argc, char* argv[]) {
 	SDL_FRect rect;
-
-	LogicEngine engine;
-	LogicBlock print_block;
-
-	print_block.arguments.push_back(std::string("hello"));
-	print_block.type = PRINT;
-
-	engine.first_block = print_block;
-	engine.process();
 
 	Game game("test");
 
@@ -49,6 +45,8 @@ int main(int argc, char* argv[]) {
 		printf("Error: SDL_Init(): %s\n", SDL_GetError());
 		return -1;
 	}
+
+	SDL_Gamepad* gamepad_state = NULL;
 
 	SDL_SetLogPriority(SDL_LOG_CATEGORY_APPLICATION, SDL_LOG_PRIORITY_VERBOSE);
 
@@ -102,6 +100,12 @@ int main(int argc, char* argv[]) {
 		SDL_RenderClear(renderer);
 
 		// SDL_SetRenderDrawBlendMode(renderer, SDL_BLENDMODE_BLEND);
+
+		const bool* keyboard_state = SDL_GetKeyboardState(NULL);
+
+		Uint32 mouse_state = SDL_GetMouseState(&MOUSE_POS_X, &MOUSE_POS_Y);
+
+		get_pressed_keys(keyboard_state, mouse_state, gamepad_state);
 
 		const bool* keystate = SDL_GetKeyboardState(NULL);
 

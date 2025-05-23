@@ -1,7 +1,6 @@
 #pragma once
 #include "default_palletes.h"
 #include "global.h"
-#include "logic_system/logic.h"
 #include "object.h"
 #include "scene.h"
 #include <SDL3/SDL.h>
@@ -18,14 +17,14 @@ class Game {
 
 	std::map<std::string, int> object_types;
 
-	std::map<std::string, int> objects_script;
+	std::map<std::string, int> object_types_logic;
 
 	std::map<std::string, Scene> scenes;
 	Pallete pallete;
 	std::map<std::string, Sprite> sprites;
 	std::vector<unsigned char> screen_buffer;
 
-	void process();
+	void process(std::vector<KEY_CODE> input_codes);
 	void render();
 
 	void add_object(Object object);
