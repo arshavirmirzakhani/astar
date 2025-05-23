@@ -237,13 +237,17 @@ KEY_CODE SDL3_gamepad_to_enum(SDL_GamepadButton button) {
 std::vector<KEY_CODE> get_pressed_keys_keyboard(const bool* keystate) {
 	std::vector<KEY_CODE> pressed_keys;
 
-	for (int sc = 0; sc < sizeof(keystate); ++sc) {
-		if (pressed_keys[sc]) {
+	int numkeys;
+	SDL_GetKeyboardState(&numkeys);
+
+	for (int sc = 0; sc < numkeys; ++sc) {
+		if (keystate[sc]) {
 			KEY_CODE key = SDL3_scancode_to_enum(static_cast<SDL_Scancode>(sc));
 			if (key != KEY_NONE)
 				pressed_keys.push_back(key);
 		}
 	}
+
 	return pressed_keys;
 }
 

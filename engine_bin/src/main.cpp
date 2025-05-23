@@ -38,8 +38,8 @@ int main(int argc, char* argv[]) {
 	game.sprites["test"] = sprite;
 
 	Scene scene;
-	scene.objects.push_back(std::move(object));
-	game.scenes["test"] = scene;
+	scene.objects.push_back(object);
+	game.scenes["test"] = std::move(scene);
 
 	if (!SDL_Init(SDL_INIT_VIDEO | SDL_INIT_GAMEPAD | SDL_INIT_AUDIO)) {
 		printf("Error: SDL_Init(): %s\n", SDL_GetError());
