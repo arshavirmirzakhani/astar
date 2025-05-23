@@ -41,7 +41,7 @@ int main(int argc, char* argv[]) {
 	scene.objects.push_back(std::move(object));
 	game.scenes["test"] = scene;
 
-	if (!SDL_Init(SDL_INIT_VIDEO | SDL_INIT_GAMEPAD | SDL_INIT_GAMEPAD)) {
+	if (!SDL_Init(SDL_INIT_VIDEO | SDL_INIT_GAMEPAD | SDL_INIT_AUDIO)) {
 		printf("Error: SDL_Init(): %s\n", SDL_GetError());
 		return -1;
 	}
