@@ -7,11 +7,11 @@
 class ScriptEngine {
 
       public:
-	ScriptEngine(/* args */);
+	ScriptEngine();
 	~ScriptEngine();
 
 	std::string script;
-
-	sol::state lua_engine;
 	void run();
+
+	template <class Archive> void serialize(Archive& archive) { archive(script); }
 };

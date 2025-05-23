@@ -1,5 +1,6 @@
 #pragma once
 #include "graphics/sprite.h"
+#include "script_engine/script_engine.h"
 #include <map>
 #include <string>
 #include <vector>
@@ -17,12 +18,17 @@ class Object {
 
 	std::string name;
 	std::string type_name;
+
 	unsigned int current_frame;
 	int frame_per_tick;
 	std::string current_animation_state;
+
 	std::map<std::string, std::vector<std::string>> all_sprites;
 
+	ScriptEngine script_engine;
+
 	template <class Archive> void serialize(Archive& archive) {
-		archive(name, type_name, current_frame, frame_per_tick, current_animation_state, all_sprites);
+		archive(name, type_name, current_frame, frame_per_tick, current_animation_state, all_sprites,
+			script_engine);
 	}
 };
