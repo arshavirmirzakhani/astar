@@ -27,7 +27,7 @@ int main(int argc, char* argv[]) {
 	Sprite sprite(1, 1);
 
 	int w, h, comp;
-	unsigned char* image = stbi_load("../testimg.png", &w, &h, &comp, 0);
+	unsigned char* image = stbi_load("assets/testimg.png", &w, &h, &comp, 0);
 
 	if (comp == 4) {
 		sprite.load_sprite_from_image(game.pallete, image, true);
