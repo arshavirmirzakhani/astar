@@ -16,6 +16,8 @@ file(GLOB_RECURSE SOURCES_EDITOR "${CMAKE_CURRENT_SOURCE_DIR}/editor/src/*.cpp" 
 set(COMMON_INCLUDES
     ${PROJECT_SOURCE_DIR}
     ${PROJECT_SOURCE_DIR}/vendor/SDL3/include/SDL3
+    ${PROJECT_SOURCE_DIR}/vendor/SDL3/include/
+    ${PROJECT_SOURCE_DIR}/vendor/SDL3/
     ${PROJECT_SOURCE_DIR}/vendor/lua/lua-5.4.7/include
     ${PROJECT_SOURCE_DIR}/vendor/
 )
