@@ -1,3 +1,9 @@
+#ifdef __EMSCRIPTEN__
+#include <SDL.h>
+#else
+#include <SDL3/SDL.h>
+#endif
+
 #include "editors/globals.h"
 #include "editors/logic_editor.h"
 #include "editors/sprite_viewer.h"
@@ -6,7 +12,6 @@
 #include "imgui/imgui_impl_sdl3.h"
 #include "imgui/imgui_impl_sdlrenderer3.h"
 #include "imgui_theme_setup.h"
-#include <SDL3/SDL.h>
 #include <cereal/archives/binary.hpp>
 #include <engine/game.h>
 #include <fstream>

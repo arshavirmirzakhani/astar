@@ -3,7 +3,6 @@
 #include "global.h"
 #include "object.h"
 #include "scene.h"
-#include <SDL3/SDL.h>
 #include <fstream>
 
 class Game {

@@ -1,5 +1,10 @@
 #pragma once
+#ifdef __EMSCRIPTEN__
+#include <SDL.h>
+#else
 #include <SDL3/SDL.h>
+#endif
+
 #include <cereal/archives/binary.hpp>
 #include <engine/game.h>
 
