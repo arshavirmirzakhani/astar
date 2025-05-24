@@ -114,3 +114,7 @@ enum KEY_CODE {
 	KEY_CONTROLLER_MISC1,
 	KEY_CONTROLLER_TOUCHPAD,
 };
+
+#include <string>
+
+std::string key_code_to_string(KEY_CODE key);

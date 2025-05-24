@@ -110,10 +110,10 @@ int main(int argc, char* argv[]) {
 		const bool* keyboard_state = SDL_GetKeyboardState(NULL);
 
 		Uint32 mouse_state = SDL_GetMouseState(&MOUSE_POS_X, &MOUSE_POS_Y);
-
 		get_pressed_keys(keyboard_state, mouse_state, gamepad_state);
-
 		const bool* keystate = SDL_GetKeyboardState(NULL);
+
+		game.process(get_pressed_keys(keyboard_state, mouse_state, gamepad_state));
 
 		if (keystate[SDL_SCANCODE_LEFT]) {
 			game.scenes["test"].objects[0].position_x -= 50 * delta_time;

@@ -9,6 +9,12 @@ Game::Game(std::string name) {
 
 Game::~Game() {}
 
+void Game::process(std::vector<KEY_CODE> input_codes) {
+	for (const auto& code : input_codes) {
+		std::cout << key_code_to_string(code) << std::endl;
+	}
+}
+
 void Game::render() {
 	this->screen_buffer = std::vector<unsigned char>(SCREEN_WIDTH * SCREEN_HEIGHT, 0);
 
