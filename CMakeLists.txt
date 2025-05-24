@@ -15,7 +15,7 @@ file(GLOB_RECURSE SOURCES_EDITOR "${CMAKE_CURRENT_SOURCE_DIR}/editor/src/*.cpp" 
 # Common include paths
 set(COMMON_INCLUDES
     ${PROJECT_SOURCE_DIR}
-    ${PROJECT_SOURCE_DIR}/vendor/SDL3/
+    ${PROJECT_SOURCE_DIR}/vendor/SDL3/include/SDL3
     ${PROJECT_SOURCE_DIR}/vendor/lua/lua-5.4.7/include
     ${PROJECT_SOURCE_DIR}/vendor/
 )
@@ -39,8 +39,8 @@ if(EMSCRIPTEN)
     add_subdirectory(vendor/SDL3)
     add_subdirectory(vendor/lua)
 
-    target_link_options(astar PRIVATE -sUSE_SDL -sALLOW_MEMORY_GROWTH=1 -sEXPORTED_RUNTIME_METHODS=['FS','callMain'] --preload-file assets)
-    target_link_options(astar_editor PRIVATE -sUSE_SDL -sALLOW_MEMORY_GROWTH=1 -sEXPORTED_RUNTIME_METHODS=['FS','callMain'] --preload-file assets)
+    target_link_options(astar PRIVATE -sUSE_SDL=0 -sALLOW_MEMORY_GROWTH=1 -sEXPORTED_RUNTIME_METHODS=['FS','callMain'] --preload-file assets)
+    target_link_options(astar_editor PRIVATE -sUSE_SDL=0 -sALLOW_MEMORY_GROWTH=1 -sEXPORTED_RUNTIME_METHODS=['FS','callMain'] --preload-file assets)
 
     target_link_libraries(astar PRIVATE lua_static)
     target_link_libraries(astar_editor PRIVATE lua_static)
