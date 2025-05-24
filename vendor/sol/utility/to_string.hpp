@@ -11,7 +11,7 @@
 // the Software, and to permit persons to whom the Software is furnished to do so,
 // subject to the following conditions:
 
-// The above copyright notice and this permission notice shall be included in all
+// The above copyright notice and this Spermission notice shall be included in all
 // copies or substantial portions of the Software.
 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
@@ -21,30 +21,39 @@
 // IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
 // CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-#ifndef SOL_CONFIG_HPP
-#define SOL_CONFIG_HPP
+#ifndef SOL_TO_STRING_HPP
+#define SOL_TO_STRING_HPP
 
-/* Base, empty configuration file!
+#include <sol/forward.hpp>
+#include <sol/object.hpp>
 
-     To override, place a file in your include paths of the form:
+#include <cstddef>
+#include <string>
 
+namespace sol::utility {
 
-. (your include path here)
-| sol (directory, or equivalent)
-  | config.hpp (your config.hpp file)
+	// Converts any object into a string using luaL_tolstring.
+	//
+	// Note: Uses the metamethod __tostring if available.
+	inline std::string to_string(const sol::stack_object& object) {
+		std::size_t len;
+		const char* str = luaL_tolstring(object.lua_state(), object.stack_index(), &len);
 
+		auto result = std::string(str, len);
 
-     So that when sol2 includes the file
+		// luaL_tolstring pushes the string onto the stack, but since
+		// we have copied it into our std::string by now we should
+		// remove it from the stack.
+		lua_pop(object.lua_state(), 1);
 
+		return result;
+	}
 
-#include <sol/config.hpp>
+	inline std::string to_string(const sol::object& object) {
+		auto pp = sol::stack::push_pop(object);
+		return to_string(sol::stack_object(object.lua_state(), -1));
+	}
 
+} // namespace sol::utility
 
-     it gives you the configuration values you desire. Configuration values can be
-seen in the safety.rst of the doc/src, or at
-https://sol2.readthedocs.io/en/latest/safety.html ! You can also pass them through
-the build system, or the command line options of your compiler.
-
-*/
-
-#endif // SOL_CONFIG_HPP
+#endif // SOL_IS_INTEGER_HPP

@@ -21,30 +21,19 @@
 // IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
 // CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-#ifndef SOL_CONFIG_HPP
-#define SOL_CONFIG_HPP
+#pragma once
 
-/* Base, empty configuration file!
+// clang-format off
 
-     To override, place a file in your include paths of the form:
+#if !defined(SOL_PROLOGUE_I_)
+	#error "[sol2] Library Prologue is missing from this translation unit."
+#else
+	#undef SOL_PROLOGUE_I_
+#endif
 
+#if SOL_IS_ON(SOL_BUILD_CXX_MODE)
+	#undef _FWD
+	#undef _MOVE
+#endif
 
-. (your include path here)
-| sol (directory, or equivalent)
-  | config.hpp (your config.hpp file)
-
-
-     So that when sol2 includes the file
-
-
-#include <sol/config.hpp>
-
-
-     it gives you the configuration values you desire. Configuration values can be
-seen in the safety.rst of the doc/src, or at
-https://sol2.readthedocs.io/en/latest/safety.html ! You can also pass them through
-the build system, or the command line options of your compiler.
-
-*/
-
-#endif // SOL_CONFIG_HPP
+// clang-format on

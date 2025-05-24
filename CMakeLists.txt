@@ -39,9 +39,6 @@ if(EMSCRIPTEN)
     add_subdirectory(vendor/SDL3)
     add_subdirectory(vendor/lua)
 
-    target_compile_definitions(astar PRIVATE SOL_NO_STD_OPT)
-    target_compile_definitions(astar_editor PRIVATE SOL_NO_STD_OPT)
-
     target_link_options(astar PRIVATE -sALLOW_MEMORY_GROWTH=1 -sEXPORTED_RUNTIME_METHODS=['FS','callMain'] --preload-file assets)
     target_link_options(astar_editor PRIVATE  -sALLOW_MEMORY_GROWTH=1 -sEXPORTED_RUNTIME_METHODS=['FS','callMain'] --preload-file assets)
 
