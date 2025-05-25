@@ -11,6 +11,7 @@ static std::string selected_animation	= "";
 void show_object_editor(Game& game) {
 	ImGui::Begin("Object Editor");
 
+	ImGui::BeginGroup();
 	// === Create new ObjectType ===
 	if (ImGui::Button("New Object Type")) {
 		ImGui::OpenPopup("new_object_popup");
@@ -43,7 +44,9 @@ void show_object_editor(Game& game) {
 		}
 	}
 
-	ImGui::Separator();
+	ImGui::EndGroup();
+
+	ImGui::SameLine();
 
 	// === Animation State Editor ===
 	if (!selected_object_type.empty()) {

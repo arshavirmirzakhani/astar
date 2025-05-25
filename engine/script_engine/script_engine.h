@@ -1,6 +1,5 @@
 #pragma once
 #include "../global.h"
-
 #include <cassert>
 #include <sol/sol.hpp>
 
@@ -10,8 +9,9 @@ class ScriptEngine {
 	ScriptEngine();
 	~ScriptEngine();
 
-	std::string script;
-	void run();
+	sol::state lua_engine;
+
+	void run(sol::state lua_engine);
 
 	template <class Archive> void serialize(Archive& archive) { archive(script); }
 };

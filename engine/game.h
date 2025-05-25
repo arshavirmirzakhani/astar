@@ -16,19 +16,24 @@ class Game {
 
 	std::map<std::string, ObjectType> object_types;
 
-	std::map<std::string, Scene> scenes;
 	Pallete pallete;
+
+	std::string current_scene;
+	std::string init_scene;
+
+	std::map<std::string, Scene> scenes;
 	std::map<std::string, Sprite> sprites;
 	std::vector<unsigned char> screen_buffer;
 
-	ScriptEngine script_engine;
+	std::vector<KEY_CODE> pressed_keys;
 
+	void init();
 	void process(std::vector<KEY_CODE> input_codes);
 	void render();
 
 	void add_object(Object object);
 
 	template <class Archive> void serialize(Archive& archive) {
-		archive(name, engine_version, object_types, scenes, pallete, sprites);
+		archive(name, engine_version, object_types, scenes, init_scene, pallete, sprites);
 	}
 };

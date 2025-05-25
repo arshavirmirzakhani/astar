@@ -23,6 +23,11 @@ int main(int argc, char* argv[]) {
 
 	game.pallete.load_pallete_from_hex(aap_64);
 
+	ObjectType type;
+	type.script = "print('hello world')";
+
+	game.object_types["type"] = type;
+
 	Object object("type");
 	Sprite sprite(1, 1);
 
@@ -45,6 +50,8 @@ int main(int argc, char* argv[]) {
 	Scene scene;
 	scene.objects.push_back(object);
 	game.scenes["test"] = std::move(scene);
+
+	game.init();
 
 	if (!SDL_Init(SDL_INIT_VIDEO | SDL_INIT_GAMEPAD | SDL_INIT_AUDIO)) {
 		printf("Error: SDL_Init(): %s\n", SDL_GetError());
@@ -107,12 +114,9 @@ int main(int argc, char* argv[]) {
 		// SDL_SetRenderDrawBlendMode(renderer, SDL_BLENDMODE_BLEND);
 
 		const bool* keyboard_state = SDL_GetKeyboardState(NULL);
+		Uint32 mouse_state	   = SDL_GetMouseState(&MOUSE_POS_X, &MOUSE_POS_Y);
 
-		Uint32 mouse_state = SDL_GetMouseState(&MOUSE_POS_X, &MOUSE_POS_Y);
-		get_pressed_keys(keyboard_state, mouse_state, gamepad_state);
 		const bool* keystate = SDL_GetKeyboardState(NULL);
-
-		game.process(get_pressed_keys(keyboard_state, mouse_state, gamepad_state));
 
 		if (keystate[SDL_SCANCODE_LEFT]) {
 			game.scenes["test"].objects[0].position_x -= 50 * delta_time;
@@ -130,6 +134,7 @@ int main(int argc, char* argv[]) {
 			game.scenes["test"].objects[0].position_y += 50 * delta_time;
 		}
 
+		game.process(get_pressed_keys(keyboard_state, mouse_state, gamepad_state));
 		game.render();
 
 		for (unsigned int y = 0; y < SCREEN_HEIGHT; y++) {

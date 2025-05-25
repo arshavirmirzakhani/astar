@@ -9,41 +9,48 @@ Game::Game(std::string name) {
 
 Game::~Game() {}
 
-void Game::process(std::vector<KEY_CODE> input_codes) {
-	for (const auto& code : input_codes) {
-		std::cout << key_code_to_string(code) << std::endl;
+void Game::init() {
+	for (auto& [name, scene] : this->scenes) {
+		for (auto& object : scene.objects) {
+			object.script = this->object_types[object.type_name].script;
+		}
 	}
+
+	current_scene = init_scene;
 }
+
+void Game::process(std::vector<KEY_CODE> input_codes) { this->pressed_keys = input_codes; }
 
 void Game::render() {
 	this->screen_buffer = std::vector<unsigned char>(SCREEN_WIDTH * SCREEN_HEIGHT, 0);
 
-	Object& current_object = this->scenes["test"].objects[0];
-	Sprite sprite	       = *current_object.current_sprite;
+	for (auto& current_object : this->scenes[this->current_scene].objects) {
+		Sprite sprite = *current_object.current_sprite;
 
-	int sprite_x_start = (int)roundf(current_object.position_x);
-	int sprite_y_start = (int)roundf(current_object.position_y);
+		int sprite_x_start = (int)roundf(current_object.position_x);
+		int sprite_y_start = (int)roundf(current_object.position_y);
 
-	int sprite_pixel_width	= sprite.width * 8;
-	int sprite_pixel_height = sprite.height * 8;
+		int sprite_pixel_width	= sprite.width * 8;
+		int sprite_pixel_height = sprite.height * 8;
 
-	int sprite_x_end = sprite_x_start + sprite_pixel_width;
-	int sprite_y_end = sprite_y_start + sprite_pixel_height;
+		int sprite_x_end = sprite_x_start + sprite_pixel_width;
+		int sprite_y_end = sprite_y_start + sprite_pixel_height;
 
-	for (int y = std::max(0, sprite_y_start); y < std::min((int)SCREEN_HEIGHT, sprite_y_end); y++) {
-		for (int x = std::max(0, sprite_x_start); x < std::min((int)SCREEN_WIDTH, sprite_x_end); x++) {
-			int sprite_x = x - sprite_x_start;
-			int sprite_y = y - sprite_y_start;
+		for (int y = std::max(0, sprite_y_start); y < std::min((int)SCREEN_HEIGHT, sprite_y_end); y++) {
+			for (int x = std::max(0, sprite_x_start); x < std::min((int)SCREEN_WIDTH, sprite_x_end); x++) {
+				int sprite_x = x - sprite_x_start;
+				int sprite_y = y - sprite_y_start;
 
-			int sprite_index = sprite_y * sprite_pixel_width + sprite_x;
+				int sprite_index = sprite_y * sprite_pixel_width + sprite_x;
 
-			if (sprite_index < 0 || sprite_index >= sprite.sprite_buffer.size())
-				continue;
+				if (sprite_index < 0 || sprite_index >= sprite.sprite_buffer.size())
+					continue;
 
-			unsigned char pixel = sprite.sprite_buffer[sprite_index];
+				unsigned char pixel = sprite.sprite_buffer[sprite_index];
 
-			if (pixel != 0) {
-				screen_buffer[y * SCREEN_WIDTH + x] = pixel;
+				if (pixel != 0) {
+					screen_buffer[y * SCREEN_WIDTH + x] = pixel;
+				}
 			}
 		}
 	}

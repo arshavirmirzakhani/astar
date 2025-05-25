@@ -31,6 +31,10 @@ class Object {
 	std::string name;
 	std::string type_name;
 
+	std::string script;
+
+	ScriptEngine* script_engine;
+
 	unsigned int current_frame;
 	int frame_per_tick;
 	std::string current_animation_state;

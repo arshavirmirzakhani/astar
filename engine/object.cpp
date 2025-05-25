@@ -10,7 +10,7 @@ Object::Object(std::string type) {
 }
 
 Object::Object() {
-	this->type_name	 = "new object";
+	this->type_name	 = "";
 	this->position_x = 0;
 	this->position_y = 0;
 }
