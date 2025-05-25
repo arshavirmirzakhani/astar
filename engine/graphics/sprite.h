@@ -10,10 +10,17 @@ class Sprite {
 	Sprite(unsigned int width, unsigned int height);
 	~Sprite();
 
-	void load_sprite_from_image(Pallete pallete, unsigned char* data, bool is_rgba);
+	void load_sprite_from_image(const Pallete& palette, unsigned char* image_data, bool has_alpha);
+
+	void regenerate_with_current_palette(const Pallete& palette, bool has_alpha);
 
 	unsigned int width;
 	unsigned int height;
 
-	template <class Archive> void serialize(Archive& archive) { archive(sprite_buffer, width, height); }
+	std::vector<unsigned char> original_image_data;
+	bool original_has_alpha = false;
+
+	template <class Archive> void serialize(Archive& archive) {
+		archive(sprite_buffer, width, height, original_image_data, original_has_alpha);
+	}
 };
