@@ -1,5 +1,8 @@
 #include "object.h"
 
+ObjectType::ObjectType() {}
+ObjectType::~ObjectType() {}
+
 Object::Object(std::string type) {
 	this->type_name	 = type;
 	this->position_x = 0;
@@ -13,5 +16,3 @@ Object::Object() {
 }
 
 Object::~Object() {}
-
-std::string Object::get_sprite_name() { return this->all_sprites[this->current_animation_state][this->current_frame]; }

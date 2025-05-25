@@ -38,8 +38,7 @@ int main(int argc, char* argv[]) {
 	}
 
 	object.current_animation_state = "first";
-	object.all_sprites["first"].push_back("test");
-	object.current_frame = 0;
+	object.current_frame	       = 0;
 
 	game.sprites["test"] = sprite;
 

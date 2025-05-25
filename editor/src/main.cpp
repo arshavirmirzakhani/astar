@@ -5,7 +5,8 @@
 #endif
 
 #include "editors/globals.h"
-#include "editors/logic_editor.h"
+#include "editors/object_editor.h"
+// #include "editors/script_editor.h"
 #include "editors/sprite_viewer.h"
 #include "font.h"
 #include "imgui/imgui.h"
@@ -20,8 +21,8 @@
 #include <string>
 
 static bool is_open_sprite_viewer;
+static bool is_open_object_editor;
 static bool is_open_scene_editor;
-static bool is_open_logic_editor;
 
 static char new_project_name[255] = "";
 
@@ -88,6 +89,11 @@ int main(int, char**) {
 	file_save_conf.fileName		 = "project.astar";
 	file_save_conf.countSelectionMax = 1;
 	file_save_conf.flags		 = ImGuiFileDialogFlags_ConfirmOverwrite;
+
+	/* 	editor.SetLanguageDefinition(TextEditor::LanguageDefinition::Lua());
+		editor.SetText(text);
+		editor.SetShowWhitespaces(false);
+		editor.SetShowShortTabGlyphs(true); */
 
 	while (!done) {
 		SDL_Event event;
@@ -204,12 +210,13 @@ int main(int, char**) {
 				is_open_sprite_viewer = (is_open_sprite_viewer) ? false : true;
 			}
 
-			if (ImGui::Button("Edit scenes")) {
-				is_open_scene_editor = (is_open_scene_editor) ? false : true;
+			if (ImGui::Button("Edit Objects")) {
+
+				is_open_object_editor = (is_open_object_editor) ? false : true;
 			}
 
-			if (ImGui::Button("Edit Logic")) {
-				is_open_logic_editor = (is_open_logic_editor) ? false : true;
+			if (ImGui::Button("Edit scenes")) {
+				is_open_scene_editor = (is_open_scene_editor) ? false : true;
 			}
 
 			ImGui::End();
@@ -218,8 +225,8 @@ int main(int, char**) {
 				show_sprite_viewer(game, renderer);
 			}
 
-			if (is_open_logic_editor) {
-				show_logic_editor();
+			if (is_open_object_editor) {
+				show_object_editor(game);
 			}
 		}
 		ImGui::End();

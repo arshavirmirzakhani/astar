@@ -14,14 +14,14 @@ class Game {
 	std::string name;
 	char engine_version[3] = {0};
 
-	std::map<std::string, int> object_types;
-
-	std::map<std::string, int> object_types_logic;
+	std::map<std::string, ObjectType> object_types;
 
 	std::map<std::string, Scene> scenes;
 	Pallete pallete;
 	std::map<std::string, Sprite> sprites;
 	std::vector<unsigned char> screen_buffer;
+
+	ScriptEngine script_engine;
 
 	void process(std::vector<KEY_CODE> input_codes);
 	void render();

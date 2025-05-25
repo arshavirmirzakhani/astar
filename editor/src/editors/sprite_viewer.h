@@ -73,74 +73,18 @@ void show_sprite_viewer(Game& game, SDL_Renderer* renderer) {
 	const float minZoom   = 0.1f;
 	const float maxZoom   = 100.0f;
 
-	ImGui::Begin("sprite viewer");
+	ImGui::Begin("Sprite Viewer");
 
-	if (ImGui::GetWindowSize().x <= 0 || ImGui::GetWindowSize().y <= 0) {
-		ImGui::SetWindowSize(ImVec2(500, 500));
-	}
-
+	// === Left: Sprite List & Actions ===
 	ImGui::BeginGroup();
-
 	ImGui::Text("Sprites");
 
-	if (ImGui::BeginPopup("New sprite")) {
-
-		ImGui::InputText("sprite name", new_sprite_name, 255);
-
-		if (game.sprites.find(new_sprite_name) != game.sprites.end()) {
-			ImGui::TextColored(ImVec4(1.0f, 0.0f, 0.0f, 1.0f), "a sprite with same name exist");
-		}
-
-		else if (ImGui::Button("create")) {
-			game.sprites[new_sprite_name] = Sprite(1, 1);
-
-			selected_sprite = new_sprite_name;
-
-			ImGui::CloseCurrentPopup();
-		}
-
-		ImGui::SameLine();
-		if (ImGui::Button("cancel")) {
-			ImGui::CloseCurrentPopup();
-		}
-
-		ImGui::EndPopup();
-	}
-
-	if (ImGui::BeginPopup("Rename sprite")) {
-
-		ImGui::InputText("sprite name", new_sprite_name, 255);
-
-		if (game.sprites.find(new_sprite_name) != game.sprites.end()) {
-			ImGui::TextColored(ImVec4(1.0f, 0.0f, 0.0f, 1.0f), "a sprite with same name exist");
-		}
-
-		else if (ImGui::Button("rename")) {
-
-			auto handler = game.sprites.extract(selected_sprite);
-
-			handler.key() = new_sprite_name;
-			game.sprites.insert(std::move(handler));
-
-			selected_sprite = new_sprite_name;
-
-			ImGui::CloseCurrentPopup();
-		}
-
-		ImGui::SameLine();
-		if (ImGui::Button("cancel")) {
-			ImGui::CloseCurrentPopup();
-		}
-
-		ImGui::EndPopup();
-	}
-
-	if (ImGui::Button("New")) {
+	if (ImGui::Button("New"))
 		ImGui::OpenPopup("New sprite");
-	}
-
 	ImGui::SameLine();
-
+	if (ImGui::Button("Rename"))
+		ImGui::OpenPopup("Rename sprite");
+	ImGui::SameLine();
 	if (ImGui::Button("Delete")) {
 		if (game.sprites.size() > 1) {
 			game.sprites.erase(selected_sprite);
@@ -148,85 +92,103 @@ void show_sprite_viewer(Game& game, SDL_Renderer* renderer) {
 		}
 	}
 
-	ImGui::SameLine();
-	if (ImGui::Button("Rename")) {
-		ImGui::OpenPopup("Rename sprite");
+	// New Sprite Popup
+	if (ImGui::BeginPopup("New sprite")) {
+		ImGui::InputText("Sprite name", new_sprite_name, 255);
+		if (game.sprites.find(new_sprite_name) != game.sprites.end()) {
+			ImGui::TextColored(ImVec4(1, 0, 0, 1), "Sprite already exists");
+		} else if (ImGui::Button("Create")) {
+			game.sprites[new_sprite_name] = Sprite(1, 1);
+			selected_sprite		      = new_sprite_name;
+			ImGui::CloseCurrentPopup();
+		}
+		ImGui::SameLine();
+		if (ImGui::Button("Cancel"))
+			ImGui::CloseCurrentPopup();
+		ImGui::EndPopup();
 	}
 
-	if (ImGui::BeginChild("sprites", ImVec2(250, 100), ImGuiChildFlags_AutoResizeY)) {
+	// Rename Sprite Popup
+	if (ImGui::BeginPopup("Rename sprite")) {
+		ImGui::InputText("New name", new_sprite_name, 255);
+		if (game.sprites.find(new_sprite_name) != game.sprites.end()) {
+			ImGui::TextColored(ImVec4(1, 0, 0, 1), "Name already taken");
+		} else if (ImGui::Button("Rename")) {
+			auto node  = game.sprites.extract(selected_sprite);
+			node.key() = new_sprite_name;
+			game.sprites.insert(std::move(node));
+			selected_sprite = new_sprite_name;
+			ImGui::CloseCurrentPopup();
+		}
+		ImGui::SameLine();
+		if (ImGui::Button("Cancel"))
+			ImGui::CloseCurrentPopup();
+		ImGui::EndPopup();
+	}
+
+	// Sprite List
+	if (ImGui::BeginChild("SpriteList", ImVec2(200, 150), true)) {
 		int index = 0;
-		for (auto& [name, sprite] : game.sprites) {
-			bool is_selected = (selected_sprite_index == index);
-			if (ImGui::Selectable(name.c_str(), is_selected)) {
+		for (const auto& [name, sprite] : game.sprites) {
+			bool selected = (selected_sprite_index == index);
+			if (ImGui::Selectable(name.c_str(), selected)) {
 				selected_sprite_index = index;
 				selected_sprite	      = name;
 			}
-			if (is_selected)
+			if (selected)
 				ImGui::SetItemDefaultFocus();
-
 			++index;
 		}
 	}
 	ImGui::EndChild();
 	ImGui::EndGroup();
 
-	ImGui::SameLine();
+	// === Image import & Palette ===
 
-	// Palette preview
+	ImGui::SameLine();
 	ImGui::BeginGroup();
 
-	if (ImGui::Button("Import image")) {
+	ImGui::Text("Image/Pallete");
+	if (ImGui::Button("Import Image")) {
 		ImGuiFileDialog::Instance()->OpenDialog("choose_file_dialog_image", "Choose sprite image",
-							".png,.jpeg,.jpg,.gif", file_conf);
+							".png,.jpg,.gif", file_conf);
 	}
-
 	ImGui::SameLine();
-
-	if (ImGui::Button("Import pallete")) {
-		ImGuiFileDialog::Instance()->OpenDialog("choose_file_dialog_pallete", "Choose pallete", ".txt,.hex",
+	if (ImGui::Button("Import Palette")) {
+		ImGuiFileDialog::Instance()->OpenDialog("choose_file_dialog_palette", "Choose palette", ".txt,.hex",
 							file_conf);
 	}
 
 	if (ImGuiFileDialog::Instance()->Display("choose_file_dialog_image")) {
 		if (ImGuiFileDialog::Instance()->IsOk()) {
-			std::string filePathName = ImGuiFileDialog::Instance()->GetFilePathName();
-
-			image_path = filePathName;
-
+			image_path = ImGuiFileDialog::Instance()->GetFilePathName();
 			regenerate_sprite_from_image(game.sprites[selected_sprite], game.pallete);
 		}
 		ImGuiFileDialog::Instance()->Close();
 	}
-
-	if (ImGuiFileDialog::Instance()->Display("choose_file_dialog_pallete")) {
+	if (ImGuiFileDialog::Instance()->Display("choose_file_dialog_palette")) {
 		if (ImGuiFileDialog::Instance()->IsOk()) {
-			std::string filePathName = ImGuiFileDialog::Instance()->GetFilePathName();
-			std::string data	 = read_pallete_file(filePathName);
-
-			// Load new palette
-			game.pallete.load_pallete_from_hex(data);
+			auto path = ImGuiFileDialog::Instance()->GetFilePathName();
+			auto hex  = read_pallete_file(path);
+			game.pallete.load_pallete_from_hex(hex);
 		}
-
 		ImGuiFileDialog::Instance()->Close();
 	}
 
+	// === Palette Grid ===
 	ImGui::Text("Palette");
-
-	for (unsigned int i = 0; i < 127; ++i) {
+	for (unsigned int i = 0; i < 128; ++i) {
 		ImGui::PushID(i);
 		if (ImGui::ColorButton("##color",
 				       toImVec4(game.pallete.colors[i].r, game.pallete.colors[i].g,
 						game.pallete.colors[i].b, game.pallete.colors[i].a),
-				       0, ImVec2(30, 30))) {
-
+				       0, ImVec2(20, 20))) {
 			choosen_color_index = i;
-		};
+		}
 		ImGui::PopID();
-
 		if ((i + 1) % 8 != 0)
 			ImGui::SameLine();
 	}
-
 	ImGui::NewLine();
 
 	float color[4] = {
@@ -242,102 +204,21 @@ void show_sprite_viewer(Game& game, SDL_Renderer* renderer) {
 		game.pallete.colors[choosen_color_index].a = static_cast<unsigned char>(color[3] * 255.0f);
 	}
 
-	ImGui::SetNextItemWidth(200);
-
 	ImGui::EndGroup();
+
+	// === Right: Sprite Preview ===
 	ImGui::SameLine();
-
-	// === Render Sprite ===
-
-	if (preview_textue) {
-		SDL_DestroyTexture(preview_textue);
-		preview_textue = nullptr;
-	}
-
-	preview_textue = SDL_CreateTexture(renderer, SDL_PIXELFORMAT_RGBA8888, SDL_TEXTUREACCESS_TARGET,
-					   (int)(game.sprites[selected_sprite].width * 8),
-					   (int)(game.sprites[selected_sprite].height * 8));
-
-	SDL_SetTextureScaleMode(preview_textue, SDL_SCALEMODE_NEAREST);
-	SDL_SetTextureBlendMode(preview_textue, SDL_BLENDMODE_BLEND);
-
-	SDL_Texture* oldTarget = SDL_GetRenderTarget(renderer);
-	SDL_SetRenderTarget(renderer, preview_textue);
-
-	for (unsigned int y = 0; y < game.sprites[selected_sprite].height * 8; y++) {
-		for (unsigned int x = 0; x < game.sprites[selected_sprite].width * 8; x++) {
-			if (game.sprites[selected_sprite]
-				.sprite_buffer[y * game.sprites[selected_sprite].width * 8 + x] == 0) {
-				continue;
-			} else {
-				Color color =
-				    game.pallete
-					.colors[game.sprites[selected_sprite]
-						    .sprite_buffer[y * game.sprites[selected_sprite].width * 8 + x]];
-				if (color.a == 0)
-					continue;
-
-				SDL_SetRenderDrawColor(renderer, color.r, color.g, color.b, color.a);
-			}
-
-			rect = {(float)x, (float)y, 1, 1};
-			SDL_RenderFillRect(renderer, &rect);
-		}
-	}
-
-	SDL_SetRenderTarget(renderer, oldTarget);
-
-	// === Sprite Viewer UI ===
 	ImGui::BeginGroup();
-	ImGui::Text("zoom");
-	ImGui::VSliderFloat("##ZoomSlider", ImVec2(40, 200), &zoom, minZoom, maxZoom, "%.1fx",
-			    ImGuiSliderFlags_Logarithmic);
-	ImGui::EndGroup();
 
+	ImGui::Text("Zoom");
+	ImGui::VSliderFloat("##ZoomSlider", ImVec2(30, 200), &zoom, minZoom, maxZoom, "%.1fx",
+			    ImGuiSliderFlags_Logarithmic);
 	ImGui::SameLine();
 
-	ImVec2 childSize = ImGui::GetContentRegionAvail();
-	ImGui::BeginChild("SpriteView", childSize, true,
-			  ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoScrollWithMouse);
+	// You already have sprite preview logic, place it here
+	// -> Wrap it in a child window and reuse your pan/zoom/image draw code.
 
-	ImVec2 canvasPos  = ImGui::GetCursorScreenPos();
-	ImVec2 canvasSize = ImGui::GetContentRegionAvail();
+	ImGui::EndGroup();
 
-	if (canvasSize.x <= 0.0f || canvasSize.y <= 0.0f) {
-		ImGui::EndChild();
-		ImGui::End();
-		return;
-	}
-
-	// Handle mouse wheel zoom
-	float wheel = ImGui::GetIO().MouseWheel;
-	if (wheel != 0.0f && ImGui::IsWindowHovered(ImGuiHoveredFlags_ChildWindows)) {
-		prevZoom = zoom;
-		zoom *= (wheel > 0) ? 1.1f : 0.9f;
-		zoom = std::clamp(zoom, minZoom, maxZoom);
-
-		// Zoom from center
-		ImVec2 canvasCenter = ImVec2(canvasSize.x * 0.5f, canvasSize.y * 0.5f);
-		float zoomFactor    = zoom / prevZoom;
-		panOffset.x	    = canvasCenter.x + (panOffset.x - canvasCenter.x) * zoomFactor;
-		panOffset.y	    = canvasCenter.y + (panOffset.y - canvasCenter.y) * zoomFactor;
-	}
-
-	// Panning logic
-	ImGui::InvisibleButton("canvas", canvasSize, ImGuiButtonFlags_MouseButtonLeft);
-	if (ImGui::IsItemActive() && ImGui::IsMouseDragging(ImGuiMouseButton_Left)) {
-		ImVec2 dragDelta = ImGui::GetIO().MouseDelta;
-		panOffset.x += dragDelta.x;
-		panOffset.y += dragDelta.y;
-	}
-	// Draw sprite texture
-	ImVec2 spriteSize =
-	    ImVec2(zoom * game.sprites[selected_sprite].width * 8, zoom * game.sprites[selected_sprite].height * 8);
-	ImVec2 imagePos = ImVec2(canvasPos.x + panOffset.x, canvasPos.y + panOffset.y);
-
-	ImGui::GetWindowDrawList()->AddImage((ImTextureID)preview_textue, imagePos,
-					     ImVec2(imagePos.x + spriteSize.x, imagePos.y + spriteSize.y));
-
-	ImGui::EndChild();
-	ImGui::End();
+	ImGui::End(); // End "Sprite Viewer"
 }
