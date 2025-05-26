@@ -28,7 +28,7 @@ class Game {
 	std::vector<KEY_CODE> pressed_keys;
 
 	void init();
-	void process(std::vector<KEY_CODE> input_codes);
+	void process(float delta, std::vector<KEY_CODE> input_codes);
 	void render();
 
 	void add_object(Object object);

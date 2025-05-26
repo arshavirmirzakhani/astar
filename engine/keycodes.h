@@ -1,3 +1,6 @@
+#include <string>
+#include <unordered_map>
+
 enum KEY_CODE {
 
 	KEY_NONE = 0,
@@ -93,7 +96,7 @@ enum KEY_CODE {
 	// Mouse buttons
 	KEY_MOUSE_LEFT,
 	KEY_MOUSE_MIDDLE,
-	KET_MOUSE_RIGHT,
+	KEY_MOUSE_RIGHT,
 
 	// Controller keys
 	KEY_CONTROLLER_BUTTON_SOUTH,
@@ -115,6 +118,4 @@ enum KEY_CODE {
 	KEY_CONTROLLER_TOUCHPAD,
 };
 
-#include <string>
-
-std::string key_code_to_string(KEY_CODE key);
+KEY_CODE string_to_key_code(const std::string& name);

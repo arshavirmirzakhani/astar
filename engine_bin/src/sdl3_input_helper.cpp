@@ -184,7 +184,7 @@ KEY_CODE SDL3_mouse_to_enum(Uint8 button) {
 	case SDL_BUTTON_MIDDLE:
 		return KEY_MOUSE_MIDDLE;
 	case SDL_BUTTON_RIGHT:
-		return KET_MOUSE_RIGHT;
+		return KEY_MOUSE_RIGHT;
 	default:
 		return KEY_NONE;
 	}

@@ -19,7 +19,7 @@ void Game::init() {
 	current_scene = init_scene;
 }
 
-void Game::process(std::vector<KEY_CODE> input_codes) { this->pressed_keys = input_codes; }
+void Game::process(float delta, std::vector<KEY_CODE> input_codes) { this->pressed_keys = input_codes; }
 
 void Game::render() {
 	this->screen_buffer = std::vector<unsigned char>(SCREEN_WIDTH * SCREEN_HEIGHT, 0);

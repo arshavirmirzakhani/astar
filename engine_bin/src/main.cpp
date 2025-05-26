@@ -74,9 +74,6 @@ int main(int argc, char* argv[]) {
 	uint64_t previous_ticks = SDL_GetTicks();
 	float delta_time	= 0.0f;
 
-	uint64_t start_time = SDL_GetTicks();
-	int frame_count	    = 0;
-
 	{
 		std::fstream fs("res.astar", std::ios::out | std::ios::binary);
 
@@ -96,11 +93,6 @@ int main(int argc, char* argv[]) {
 	while (!quit) {
 
 		uint64_t current_time = SDL_GetTicks();
-		frame_count++;
-
-		uint64_t current_ticks = SDL_GetTicks();
-		delta_time	       = (current_ticks - previous_ticks) / 1000.0f; // Convert milliseconds to seconds
-		previous_ticks	       = current_ticks;
 
 		while (SDL_PollEvent(&e)) {
 			if (e.type == SDL_EVENT_QUIT) {
@@ -134,7 +126,7 @@ int main(int argc, char* argv[]) {
 			game.scenes["test"].objects[0].position_y += 50 * delta_time;
 		}
 
-		game.process(get_pressed_keys(keyboard_state, mouse_state, gamepad_state));
+		game.process(delta_time, get_pressed_keys(keyboard_state, mouse_state, gamepad_state));
 		game.render();
 
 		for (unsigned int y = 0; y < SCREEN_HEIGHT; y++) {
@@ -156,12 +148,8 @@ int main(int argc, char* argv[]) {
 			}
 		}
 
-		if (current_time - start_time >= 1000) {
-			float fps = frame_count * 1000.0f / (current_time - start_time);
-			std::cout << "FPS: " << fps << std::endl;
-			frame_count = 0;
-			start_time  = current_time;
-		}
+		delta_time     = SDL_GetTicks() - previous_ticks;
+		previous_ticks = SDL_GetTicks();
 
 		SDL_RenderPresent(renderer);
 	}
