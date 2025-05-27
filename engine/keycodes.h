@@ -119,3 +119,5 @@ enum KEY_CODE {
 };
 
 KEY_CODE string_to_key_code(const std::string& name);
+
+extern std::unordered_map<std::string, KEY_CODE> keycode_map;

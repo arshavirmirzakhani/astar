@@ -12,14 +12,24 @@ Game::~Game() {}
 void Game::init() {
 	for (auto& [name, scene] : this->scenes) {
 		for (auto& object : scene.objects) {
-			object.script = this->object_types[object.type_name].script;
+			object.type = this->object_types[object.type_name];
+			object.current_sprite =
+			    &this->sprites[object.type.all_animation_states[object.current_animation_state]
+									   [object.current_frame]];
 		}
 	}
 
 	current_scene = init_scene;
 }
 
-void Game::process(float delta, std::vector<KEY_CODE> input_codes) { this->pressed_keys = input_codes; }
+void Game::process(float delta, std::vector<KEY_CODE> input_codes) {
+	for (auto& object : this->scenes[current_scene].objects) {
+		object.process(delta, input_codes);
+		object.current_sprite =
+		    &this->sprites[object.type
+				       .all_animation_states[object.current_animation_state][object.current_frame]];
+	}
+}
 
 void Game::render() {
 	this->screen_buffer = std::vector<unsigned char>(SCREEN_WIDTH * SCREEN_HEIGHT, 0);

@@ -24,33 +24,30 @@ int main(int argc, char* argv[]) {
 	game.pallete.load_pallete_from_hex(aap_64);
 
 	ObjectType type;
-	type.script = "print('hello world')";
+	type.script = "";
+	type.all_animation_states["def"].push_back("test");
+	type.default_animation_state = "def";
 
 	game.object_types["type"] = type;
 
 	Object object("type");
-	Sprite sprite(1, 1);
-
-	int w, h, comp;
-	unsigned char* image = stbi_load("assets/testimg.png", &w, &h, &comp, 0);
-
-	if (comp == 4) {
-		sprite.load_sprite_from_image(game.pallete, image, true);
-		printf("4 channel\n");
-	} else {
-		sprite.load_sprite_from_image(game.pallete, image, false);
-		printf("3 channel\n");
-	}
-
-	object.current_animation_state = "first";
+	object.current_animation_state = "def";
 	object.current_frame	       = 0;
 
+	// Create and assign sprite
+	Sprite sprite(1, 1);
+	int w, h, comp;
+	unsigned char* image = stbi_load("assets/testimg.png", &w, &h, &comp, 0);
+	sprite.load_sprite_from_image(game.pallete, image, comp == 4);
 	game.sprites["test"] = sprite;
 
+	// Build scene
 	Scene scene;
 	scene.objects.push_back(object);
 	game.scenes["test"] = std::move(scene);
+	game.init_scene	    = "test";
 
+	// Init game
 	game.init();
 
 	if (!SDL_Init(SDL_INIT_VIDEO | SDL_INIT_GAMEPAD | SDL_INIT_AUDIO)) {
@@ -110,23 +107,8 @@ int main(int argc, char* argv[]) {
 
 		const bool* keystate = SDL_GetKeyboardState(NULL);
 
-		if (keystate[SDL_SCANCODE_LEFT]) {
-			game.scenes["test"].objects[0].position_x -= 50 * delta_time;
-		}
-
-		if (keystate[SDL_SCANCODE_RIGHT]) {
-			game.scenes["test"].objects[0].position_x += 50 * delta_time;
-		}
-
-		if (keystate[SDL_SCANCODE_UP]) {
-			game.scenes["test"].objects[0].position_y -= 50 * delta_time;
-		}
-
-		if (keystate[SDL_SCANCODE_DOWN]) {
-			game.scenes["test"].objects[0].position_y += 50 * delta_time;
-		}
-
 		game.process(delta_time, get_pressed_keys(keyboard_state, mouse_state, gamepad_state));
+
 		game.render();
 
 		for (unsigned int y = 0; y < SCREEN_HEIGHT; y++) {
