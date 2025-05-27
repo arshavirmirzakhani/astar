@@ -24,7 +24,7 @@ int main(int argc, char* argv[]) {
 	game.pallete.load_pallete_from_hex(aap_64);
 
 	ObjectType type;
-	type.script = "";
+	type.script = "if is_key_pressed(\"KEY_D\") then POSITION_X = POSITION_X + (50 * DELTA) end";
 	type.all_animation_states["def"].push_back("test");
 	type.default_animation_state = "def";
 
@@ -33,12 +33,6 @@ int main(int argc, char* argv[]) {
 	Object object("type");
 	object.current_animation_state = "def";
 	object.current_frame	       = 0;
-
-	Object object2("type");
-	object2.current_animation_state = "def";
-	object2.current_frame		= 0;
-	object2.position_x		= 100;
-	object2.position_y		= 10;
 
 	// Create and assign sprite
 	Sprite sprite(1, 1);
@@ -50,7 +44,6 @@ int main(int argc, char* argv[]) {
 	// Build scene
 	Scene scene;
 	scene.objects.push_back(object);
-	scene.objects.push_back(object2);
 	game.scenes["test"] = std::move(scene);
 	game.init_scene	    = "test";
 
@@ -75,8 +68,9 @@ int main(int argc, char* argv[]) {
 	SDL_Event e;
 	bool quit = false;
 
-	uint64_t previous_ticks = SDL_GetTicks();
-	float delta_time	= 0.0f;
+	Uint64 now  = SDL_GetPerformanceCounter();
+	Uint64 last = 0;
+	float delta = 0.0;
 
 	{
 		std::fstream fs("res.astar", std::ios::out | std::ios::binary);
@@ -114,7 +108,7 @@ int main(int argc, char* argv[]) {
 
 		const bool* keystate = SDL_GetKeyboardState(NULL);
 
-		game.process(delta_time, get_pressed_keys(keyboard_state, mouse_state, gamepad_state));
+		game.process(delta, get_pressed_keys(keyboard_state, mouse_state, gamepad_state));
 
 		game.render();
 
@@ -137,8 +131,9 @@ int main(int argc, char* argv[]) {
 			}
 		}
 
-		delta_time     = SDL_GetTicks() - previous_ticks;
-		previous_ticks = SDL_GetTicks();
+		last  = now;
+		now   = SDL_GetPerformanceCounter();
+		delta = static_cast<float>(now - last) / SDL_GetPerformanceFrequency();
 
 		SDL_RenderPresent(renderer);
 	}
