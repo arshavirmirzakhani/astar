@@ -47,7 +47,7 @@ class Object {
 
 	Sprite* current_sprite;
 
-	sol::state* lua_engine;
+	std::shared_ptr<sol::state> lua_engine;
 
 	void process(float delta, std::vector<KEY_CODE> input_codes);
 

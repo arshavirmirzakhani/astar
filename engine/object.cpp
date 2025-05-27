@@ -10,7 +10,7 @@ void Object::expose_keycodes_as_constants(const std::unordered_map<std::string, 
 }
 
 Object::Object(std::string type) {
-	this->lua_engine = new sol::state();
+	lua_engine = std::make_shared<sol::state>();
 	this->lua_engine->open_libraries(sol::lib::base, sol::lib::math);
 	expose_keycodes_as_constants(keycode_map);
 
@@ -20,7 +20,7 @@ Object::Object(std::string type) {
 }
 
 Object::Object() {
-	this->lua_engine = new sol::state();
+	lua_engine = std::make_shared<sol::state>();
 	this->lua_engine->open_libraries(sol::lib::base, sol::lib::math);
 	expose_keycodes_as_constants(keycode_map);
 
@@ -29,10 +29,7 @@ Object::Object() {
 	this->position_y = 0;
 }
 
-Object::~Object() {
-	delete this->lua_engine;
-	this->lua_engine = nullptr;
-}
+Object::~Object() {}
 
 void Object::process(float delta, std::vector<KEY_CODE> input_codes) {
 	this->lua_engine->set("DELTA", delta);

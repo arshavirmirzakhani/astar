@@ -34,6 +34,12 @@ int main(int argc, char* argv[]) {
 	object.current_animation_state = "def";
 	object.current_frame	       = 0;
 
+	Object object2("type");
+	object2.current_animation_state = "def";
+	object2.current_frame		= 0;
+	object2.position_x		= 100;
+	object2.position_y		= 10;
+
 	// Create and assign sprite
 	Sprite sprite(1, 1);
 	int w, h, comp;
@@ -44,6 +50,7 @@ int main(int argc, char* argv[]) {
 	// Build scene
 	Scene scene;
 	scene.objects.push_back(object);
+	scene.objects.push_back(object2);
 	game.scenes["test"] = std::move(scene);
 	game.init_scene	    = "test";
 
