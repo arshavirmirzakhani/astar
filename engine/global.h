@@ -1,9 +1,11 @@
 #pragma once
 #include "keycodes.h"
 #include <cereal/archives/binary.hpp>
+#include <cereal/types/complex.hpp>
 #include <cereal/types/map.hpp>
 #include <cereal/types/memory.hpp>
 #include <cereal/types/unordered_map.hpp>
+#include <cereal/types/utility.hpp>
 #include <cereal/types/vector.hpp>
 #include <map>
 #include <math.h>
@@ -12,6 +14,9 @@
 
 const int SCREEN_WIDTH	= 240;
 const int SCREEN_HEIGHT = 160;
+
+extern float CAMERA_POSITION_X;
+extern float CAMERA_POSITION_Y;
 
 struct Color {
 	unsigned char r = 0;

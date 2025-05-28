@@ -6,6 +6,13 @@
 #include <string>
 #include <vector>
 
+struct SpriteInfo {
+	unsigned int begin_x = 0;
+	unsigned int begin_y = 0;
+	unsigned int width   = 1;
+	unsigned int height  = 1;
+	template <class Archive> void serialize(Archive& archive) { archive(begin_x, begin_y, width, height); }
+};
 class ObjectType {
       private:
 	/* data */
@@ -17,12 +24,10 @@ class ObjectType {
 
 	std::string default_animation_state;
 
-	std::map<std::string, std::vector<std::string>> all_animation_states;
+	std::map<std::string, std::vector<std::pair<std::string, SpriteInfo>>> all_animation_states;
 	int frame_per_tick;
 
-	template <class Archive> void serialize(Archive& archive) {
-		archive(script, all_animation_states, default_animation_state, frame_per_tick);
-	}
+	template <class Archive> void serialize(Archive& archive) { archive(script, all_animation_states, default_animation_state, frame_per_tick); }
 };
 
 class Object {
@@ -52,7 +57,6 @@ class Object {
 	void process(float delta, std::vector<KEY_CODE> input_codes);
 
 	template <class Archive> void serialize(Archive& archive) {
-		archive(name, position_x, position_y, type_name, current_frame, frame_per_tick,
-			current_animation_state);
+		archive(name, position_x, position_y, type_name, current_frame, frame_per_tick, current_animation_state);
 	}
 };

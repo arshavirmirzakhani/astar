@@ -1,9 +1,10 @@
 #include "global.h"
 #include <cstring>
 
-unsigned char hex_component_to_uchar(const std::string& hex) {
-	return static_cast<unsigned char>(std::stoi(hex, nullptr, 16));
-}
+float CAMERA_POSITION_X = 0;
+float CAMERA_POSITION_Y = 0;
+
+unsigned char hex_component_to_uchar(const std::string& hex) { return static_cast<unsigned char>(std::stoi(hex, nullptr, 16)); }
 
 Color hex_to_rgba(const std::string& hex) {
 	std::string clean_hex = hex;

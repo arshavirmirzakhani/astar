@@ -33,7 +33,5 @@ class Game {
 
 	void add_object(Object object);
 
-	template <class Archive> void serialize(Archive& archive) {
-		archive(name, engine_version, object_types, scenes, init_scene, pallete, sprites);
-	}
+	template <class Archive> void serialize(Archive& archive) { archive(name, engine_version, object_types, scenes, init_scene, pallete, sprites); }
 };

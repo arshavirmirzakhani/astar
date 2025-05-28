@@ -6,7 +6,7 @@
 
 #include "editors/globals.h"
 #include "editors/object_editor.h"
-// #include "editors/script_editor.h"
+#include "editors/script_editor.h"
 #include "editors/sprite_viewer.h"
 #include "font.h"
 #include "imgui/imgui.h"
@@ -23,6 +23,7 @@
 static bool is_open_sprite_viewer;
 static bool is_open_object_editor;
 static bool is_open_scene_editor;
+static bool is_open_script_editor;
 
 static char new_project_name[255] = "";
 
@@ -90,10 +91,12 @@ int main(int, char**) {
 	file_save_conf.countSelectionMax = 1;
 	file_save_conf.flags		 = ImGuiFileDialogFlags_ConfirmOverwrite;
 
-	/* 	editor.SetLanguageDefinition(TextEditor::LanguageDefinition::Lua());
-		editor.SetText(text);
-		editor.SetShowWhitespaces(false);
-		editor.SetShowShortTabGlyphs(true); */
+	TextEditor editor;
+
+	editor.SetLanguageDefinition(TextEditor::LanguageDefinition::Lua());
+	editor.SetText(text);
+	editor.SetShowWhitespaces(false);
+	editor.SetShowShortTabGlyphs(true);
 
 	while (!done) {
 		SDL_Event event;
@@ -211,8 +214,11 @@ int main(int, char**) {
 			}
 
 			if (ImGui::Button("Edit Objects")) {
-
 				is_open_object_editor = (is_open_object_editor) ? false : true;
+			}
+
+			if (ImGui::Button("Edit scripts")) {
+				is_open_script_editor = (is_open_script_editor) ? false : true;
 			}
 
 			if (ImGui::Button("Edit scenes")) {
@@ -226,7 +232,11 @@ int main(int, char**) {
 			}
 
 			if (is_open_object_editor) {
-				show_object_editor(game);
+				show_object_editor(game, renderer);
+			}
+
+			if (is_open_script_editor) {
+				show_script_editor(game, editor);
 			}
 		}
 		ImGui::End();

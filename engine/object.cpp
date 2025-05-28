@@ -36,15 +36,18 @@ void Object::process(float delta, std::vector<KEY_CODE> input_codes) {
 	this->lua_engine->set("DELTA", delta);
 	this->lua_engine->set("POSITION_X", this->position_x);
 	this->lua_engine->set("POSITION_Y", this->position_y);
+	this->lua_engine->set("CAMERA_POSITION_X", CAMERA_POSITION_X);
+	this->lua_engine->set("CAMERA_POSITION_Y", CAMERA_POSITION_Y);
 
 	this->lua_engine->set_function("is_key_pressed", [input_codes](std::string key) -> bool {
-		return (std::find(input_codes.begin(), input_codes.end(), keycode_map[key]) != input_codes.end())
-			   ? true
-			   : false;
+		return (std::find(input_codes.begin(), input_codes.end(), keycode_map[key]) != input_codes.end()) ? true : false;
 	});
 
 	this->lua_engine->script(this->type.script);
 
 	this->position_x = this->lua_engine->get<float>("POSITION_X");
 	this->position_y = this->lua_engine->get<float>("POSITION_Y");
+
+	CAMERA_POSITION_X = this->lua_engine->get<float>("CAMERA_POSITION_X");
+	CAMERA_POSITION_Y = this->lua_engine->get<float>("CAMERA_POSITION_Y");
 }

@@ -15,37 +15,16 @@ static ImVec2 panOffset			  = ImVec2(0, 0);
 static unsigned int choosen_color_index	  = 0;
 static unsigned int selected_sprite_index = 0;
 
-std::string image_path	    = "";
-std::string selected_sprite = "default";
-SDL_Texture* preview_textue = nullptr;
-SDL_FRect rect;
+std::string image_path			 = "";
+std::string selected_sprite		 = "default";
+SDL_Texture* sprite_view_preview_texture = nullptr;
+SDL_FRect sprite_preview_rect;
 static char new_sprite_name[255] = "";
 
-ImVec4 toImVec4(unsigned char& r, unsigned char& g, unsigned char& b, unsigned char& a) {
-	return ImVec4(r / 255.0f, g / 255.0f, b / 255.0f, a / 255.0f);
-}
+static float sprite_view_zoom = 1.0f;
+static float prevZoom	      = sprite_view_zoom;
 
-void regenerate_sprite_from_image(Sprite& sprite, Pallete& pallete) {
-	if (image_path.empty())
-		return;
-
-	int w, h, comp;
-	unsigned char* image = stbi_load(image_path.c_str(), &w, &h, &comp, 0);
-	if (!image) {
-		std::cerr << "Failed to reload image: " << stbi_failure_reason() << std::endl;
-		return;
-	}
-
-	if (w % 8 == 0 && h % 8 == 0) {
-		Sprite new_sprite(w / 8, h / 8);
-		new_sprite.load_sprite_from_image(pallete, image, comp == 4);
-		sprite = new_sprite;
-	} else {
-		std::cerr << "Image dimensions not divisible by 8\n";
-	}
-
-	stbi_image_free(image);
-}
+ImVec4 toImVec4(unsigned char& r, unsigned char& g, unsigned char& b, unsigned char& a) { return ImVec4(r / 255.0f, g / 255.0f, b / 255.0f, a / 255.0f); }
 
 std::string read_pallete_file(const std::string& filename) {
 	std::ifstream file(filename);
@@ -57,9 +36,6 @@ std::string read_pallete_file(const std::string& filename) {
 }
 
 void show_sprite_viewer(Game& game, SDL_Renderer* renderer) {
-	static float zoom     = 1.0f;
-	static float prevZoom = zoom;
-	const float minZoom = 0.1f, maxZoom = 100.0f;
 
 	ImGui::Begin("Sprite Viewer");
 
@@ -115,7 +91,7 @@ void show_sprite_viewer(Game& game, SDL_Renderer* renderer) {
 	}
 
 	// Sprite List
-	if (ImGui::BeginChild("SpriteList", ImVec2(200, 150), true)) {
+	if (ImGui::BeginChild("SpriteList", ImVec2(200, 500), true)) {
 		int index = 0;
 		for (const auto& [name, sprite] : game.sprites) {
 			bool selected = (selected_sprite_index == index);
@@ -137,19 +113,17 @@ void show_sprite_viewer(Game& game, SDL_Renderer* renderer) {
 	ImGui::Text("Image / Palette");
 
 	if (ImGui::Button("Import Image")) {
-		ImGuiFileDialog::Instance()->OpenDialog("choose_file_dialog_image", "Choose sprite image",
-							".png,.jpg,.gif", file_conf);
+		ImGuiFileDialog::Instance()->OpenDialog("choose_file_dialog_image", "Choose sprite image", ".png,.jpg,.gif", file_conf);
 	}
 	ImGui::SameLine();
 	if (ImGui::Button("Import Palette")) {
-		ImGuiFileDialog::Instance()->OpenDialog("choose_file_dialog_palette", "Choose palette", ".txt,.hex",
-							file_conf);
+		ImGuiFileDialog::Instance()->OpenDialog("choose_file_dialog_palette", "Choose palette", ".txt,.hex", file_conf);
 	}
 
 	if (ImGuiFileDialog::Instance()->Display("choose_file_dialog_image")) {
 		if (ImGuiFileDialog::Instance()->IsOk()) {
 			image_path = ImGuiFileDialog::Instance()->GetFilePathName();
-			regenerate_sprite_from_image(game.sprites[selected_sprite], game.pallete);
+			regenerate_sprite_from_image(image_path, game.sprites[selected_sprite], game.pallete);
 		}
 		ImGuiFileDialog::Instance()->Close();
 	}
@@ -158,8 +132,7 @@ void show_sprite_viewer(Game& game, SDL_Renderer* renderer) {
 			std::string path = ImGuiFileDialog::Instance()->GetFilePathName();
 			game.pallete.load_pallete_from_hex(read_pallete_file(path));
 
-			game.sprites[selected_sprite].regenerate_with_current_palette(
-			    game.pallete, game.sprites[selected_sprite].original_has_alpha);
+			game.sprites[selected_sprite].regenerate_with_current_palette(game.pallete, game.sprites[selected_sprite].original_has_alpha);
 		}
 		ImGuiFileDialog::Instance()->Close();
 	}
@@ -168,9 +141,8 @@ void show_sprite_viewer(Game& game, SDL_Renderer* renderer) {
 	for (unsigned int i = 0; i < 128; ++i) {
 		ImGui::PushID(i);
 		if (ImGui::ColorButton("##color",
-				       toImVec4(game.pallete.colors[i].r, game.pallete.colors[i].g,
-						game.pallete.colors[i].b, game.pallete.colors[i].a),
-				       0, ImVec2(30, 30))) {
+				       toImVec4(game.pallete.colors[i].r, game.pallete.colors[i].g, game.pallete.colors[i].b, game.pallete.colors[i].a), 0,
+				       ImVec2(30, 30))) {
 			choosen_color_index = i;
 		}
 		ImGui::PopID();
@@ -178,13 +150,10 @@ void show_sprite_viewer(Game& game, SDL_Renderer* renderer) {
 			ImGui::SameLine();
 	}
 
-	float color[4] = {
-	    game.pallete.colors[choosen_color_index].r / 255.0f, game.pallete.colors[choosen_color_index].g / 255.0f,
-	    game.pallete.colors[choosen_color_index].b / 255.0f, game.pallete.colors[choosen_color_index].a / 255.0f};
+	float color[4] = {game.pallete.colors[choosen_color_index].r / 255.0f, game.pallete.colors[choosen_color_index].g / 255.0f,
+			  game.pallete.colors[choosen_color_index].b / 255.0f, game.pallete.colors[choosen_color_index].a / 255.0f};
 
-	if (ImGui::ColorEdit4("Color Editor", color,
-			      ImGuiColorEditFlags_NoInputs | ImGuiColorEditFlags_AlphaBar |
-				  ImGuiColorEditFlags_AlphaPreview)) {
+	if (ImGui::ColorEdit4("Color Editor", color, ImGuiColorEditFlags_NoInputs | ImGuiColorEditFlags_AlphaBar | ImGuiColorEditFlags_AlphaPreview)) {
 		game.pallete.colors[choosen_color_index].r = static_cast<unsigned char>(color[0] * 255.0f);
 		game.pallete.colors[choosen_color_index].g = static_cast<unsigned char>(color[1] * 255.0f);
 		game.pallete.colors[choosen_color_index].b = static_cast<unsigned char>(color[2] * 255.0f);
@@ -197,15 +166,13 @@ void show_sprite_viewer(Game& game, SDL_Renderer* renderer) {
 	ImGui::SameLine();
 	ImGui::BeginGroup();
 	ImGui::Text("Zoom");
-	ImGui::VSliderFloat("##ZoomSlider", ImVec2(40, 200), &zoom, minZoom, maxZoom, "%.1fx",
-			    ImGuiSliderFlags_Logarithmic);
+	ImGui::VSliderFloat("##ZoomSlider", ImVec2(40, 200), &sprite_view_zoom, 0.1f, 100.0f, "%.1fx", ImGuiSliderFlags_Logarithmic);
 	ImGui::EndGroup();
 
 	ImGui::SameLine();
 
 	ImVec2 canvasSize = ImGui::GetContentRegionAvail();
-	ImGui::BeginChild("SpriteCanvas", canvasSize, true,
-			  ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoScrollWithMouse);
+	ImGui::BeginChild("SpriteCanvas", canvasSize, true, ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoScrollWithMouse);
 
 	ImVec2 canvasPos = ImGui::GetCursorScreenPos();
 	if (canvasSize.x <= 0 || canvasSize.y <= 0) {
@@ -217,13 +184,13 @@ void show_sprite_viewer(Game& game, SDL_Renderer* renderer) {
 	// Zoom center
 	float wheel = ImGui::GetIO().MouseWheel;
 	if (wheel != 0.0f && ImGui::IsWindowHovered(ImGuiHoveredFlags_ChildWindows)) {
-		prevZoom = zoom;
-		zoom *= (wheel > 0) ? 1.1f : 0.9f;
-		zoom	      = std::clamp(zoom, minZoom, maxZoom);
-		ImVec2 center = ImVec2(canvasSize.x * 0.5f, canvasSize.y * 0.5f);
-		float factor  = zoom / prevZoom;
-		panOffset.x   = center.x + (panOffset.x - center.x) * factor;
-		panOffset.y   = center.y + (panOffset.y - center.y) * factor;
+		prevZoom = sprite_view_zoom;
+		sprite_view_zoom *= (wheel > 0) ? 1.1f : 0.9f;
+		sprite_view_zoom = std::clamp(sprite_view_zoom, 0.1f, 100.0f);
+		ImVec2 center	 = ImVec2(canvasSize.x * 0.5f, canvasSize.y * 0.5f);
+		float factor	 = sprite_view_zoom / prevZoom;
+		panOffset.x	 = center.x + (panOffset.x - center.x) * factor;
+		panOffset.y	 = center.y + (panOffset.y - center.y) * factor;
 	}
 
 	// Drag/Pan
@@ -235,21 +202,19 @@ void show_sprite_viewer(Game& game, SDL_Renderer* renderer) {
 	}
 
 	// Render to preview texture
-	if (preview_textue)
-		SDL_DestroyTexture(preview_textue);
-	preview_textue =
-	    SDL_CreateTexture(renderer, SDL_PIXELFORMAT_RGBA8888, SDL_TEXTUREACCESS_TARGET,
-			      game.sprites[selected_sprite].width * 8, game.sprites[selected_sprite].height * 8);
-	SDL_SetTextureScaleMode(preview_textue, SDL_SCALEMODE_NEAREST);
-	SDL_SetTextureBlendMode(preview_textue, SDL_BLENDMODE_BLEND);
+	if (sprite_view_preview_texture)
+		SDL_DestroyTexture(sprite_view_preview_texture);
+	sprite_view_preview_texture = SDL_CreateTexture(renderer, SDL_PIXELFORMAT_RGBA8888, SDL_TEXTUREACCESS_TARGET, game.sprites[selected_sprite].width * 8,
+							game.sprites[selected_sprite].height * 8);
+	SDL_SetTextureScaleMode(sprite_view_preview_texture, SDL_SCALEMODE_NEAREST);
+	SDL_SetTextureBlendMode(sprite_view_preview_texture, SDL_BLENDMODE_BLEND);
 
 	SDL_Texture* oldTarget = SDL_GetRenderTarget(renderer);
-	SDL_SetRenderTarget(renderer, preview_textue);
+	SDL_SetRenderTarget(renderer, sprite_view_preview_texture);
 
 	for (unsigned int y = 0; y < game.sprites[selected_sprite].height * 8; y++) {
 		for (unsigned int x = 0; x < game.sprites[selected_sprite].width * 8; x++) {
-			uint8_t pixel = game.sprites[selected_sprite]
-					    .sprite_buffer[y * game.sprites[selected_sprite].width * 8 + x];
+			uint8_t pixel = game.sprites[selected_sprite].sprite_buffer[y * game.sprites[selected_sprite].width * 8 + x];
 			if (pixel == 0)
 				continue;
 
@@ -258,20 +223,18 @@ void show_sprite_viewer(Game& game, SDL_Renderer* renderer) {
 				continue;
 
 			SDL_SetRenderDrawColor(renderer, color.r, color.g, color.b, color.a);
-			rect = {(float)x, (float)y, 1, 1};
-			SDL_RenderFillRect(renderer, &rect);
+			sprite_preview_rect = {(float)x, (float)y, 1, 1};
+			SDL_RenderFillRect(renderer, &sprite_preview_rect);
 		}
 	}
 
 	SDL_SetRenderTarget(renderer, oldTarget);
 
 	// Draw image on canvas
-	ImVec2 imageSize = {zoom * game.sprites[selected_sprite].width * 8,
-			    zoom * game.sprites[selected_sprite].height * 8};
+	ImVec2 imageSize = {sprite_view_zoom * game.sprites[selected_sprite].width * 8, sprite_view_zoom * game.sprites[selected_sprite].height * 8};
 	ImVec2 imagePos	 = ImVec2(canvasPos.x + panOffset.x, canvasPos.y + panOffset.y);
 
-	ImGui::GetWindowDrawList()->AddImage((ImTextureID)preview_textue, imagePos,
-					     ImVec2(imagePos.x + imageSize.x, imagePos.y + imageSize.y));
+	ImGui::GetWindowDrawList()->AddImage((ImTextureID)sprite_view_preview_texture, imagePos, ImVec2(imagePos.x + imageSize.x, imagePos.y + imageSize.y));
 	ImGui::EndChild();
 
 	ImGui::End();

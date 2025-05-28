@@ -6,4 +6,4 @@ BreakBeforeBraces: Attach
 PointerAlignment: Left
 AlignConsecutiveAssignments: true
 AllowShortIfStatementsOnASingleLine: false
-ColumnLimit: 120
+ColumnLimit: 160

@@ -24,8 +24,12 @@ int main(int argc, char* argv[]) {
 	game.pallete.load_pallete_from_hex(aap_64);
 
 	ObjectType type;
-	type.script = "if is_key_pressed(\"KEY_D\") then POSITION_X = POSITION_X + (50 * DELTA) end";
-	type.all_animation_states["def"].push_back("test");
+	type.script = "if is_key_pressed(\"KEY_A\") then POSITION_X = POSITION_X - (50 * DELTA) end \n if "
+		      "is_key_pressed(\"KEY_D\") then POSITION_X = POSITION_X + (50 * DELTA) end \n if "
+		      "is_key_pressed(\"KEY_W\") then POSITION_Y = POSITION_Y - (50 * DELTA) end \n if "
+		      "is_key_pressed(\"KEY_S\") then POSITION_Y = POSITION_Y + (50 * DELTA) end";
+
+	type.all_animation_states["def"].push_back(std::make_pair("test", SpriteInfo()));
 	type.default_animation_state = "def";
 
 	game.object_types["type"] = type;
@@ -59,7 +63,7 @@ int main(int argc, char* argv[]) {
 
 	SDL_SetLogPriority(SDL_LOG_CATEGORY_APPLICATION, SDL_LOG_PRIORITY_VERBOSE);
 
-	SDL_Window* window     = SDL_CreateWindow("test", 640, 480, SDL_WINDOW_RESIZABLE);
+	SDL_Window* window     = SDL_CreateWindow(game.name.c_str(), 640, 480, SDL_WINDOW_RESIZABLE);
 	SDL_Renderer* renderer = SDL_CreateRenderer(window, NULL);
 
 	SDL_SetRenderVSync(renderer, SDL_RENDERER_VSYNC_ADAPTIVE);
@@ -89,7 +93,6 @@ int main(int argc, char* argv[]) {
 	}
 
 	while (!quit) {
-
 		uint64_t current_time = SDL_GetTicks();
 
 		while (SDL_PollEvent(&e)) {
