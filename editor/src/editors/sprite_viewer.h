@@ -162,7 +162,7 @@ void show_sprite_viewer(Game& game, SDL_Renderer* renderer) {
 
 	ImGui::EndGroup();
 
-	// === Sprite Zoom View ===
+	// Sprite Zoom View
 	ImGui::SameLine();
 	ImGui::BeginGroup();
 	ImGui::Text("Zoom");

@@ -6,7 +6,7 @@
 #include <SDL3/SDL_gamepad.h>
 #endif
 
-#include <cereal/archives/binary.hpp>
+#include <cereal/archives/json.hpp>
 #include <engine/game.h>
 #include <iostream>
 #define STB_IMAGE_IMPLEMENTATION
@@ -19,40 +19,23 @@ float MOUSE_POS_Y = 0;
 int main(int argc, char* argv[]) {
 	SDL_FRect rect;
 
-	Game game("test");
+	std::fstream fs("res.astar", std::ios::in);
 
-	game.pallete.load_pallete_from_hex(aap_64);
+	if (!fs) {
+		SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "Failed to open game data!");
+		return -1;
+	}
 
-	ObjectType type;
-	type.script = "if is_key_pressed(\"KEY_A\") then POSITION_X = POSITION_X - (50 * DELTA) end \n if "
-		      "is_key_pressed(\"KEY_D\") then POSITION_X = POSITION_X + (50 * DELTA) end \n if "
-		      "is_key_pressed(\"KEY_W\") then POSITION_Y = POSITION_Y - (50 * DELTA) end \n if "
-		      "is_key_pressed(\"KEY_S\") then POSITION_Y = POSITION_Y + (50 * DELTA) end";
+	cereal::JSONInputArchive archive(fs);
 
-	type.all_animation_states["def"].push_back(std::make_pair("test", SpriteInfo()));
-	type.default_animation_state = "def";
+	Game game;
 
-	game.object_types["type"] = type;
+	SDL_LogDebug(SDL_LOG_CATEGORY_TEST, "before input");
+	archive(game);
+	SDL_LogDebug(SDL_LOG_CATEGORY_TEST, "after input");
 
-	Object object("type");
-	object.current_animation_state = "def";
-	object.current_frame	       = 0;
-
-	// Create and assign sprite
-	Sprite sprite(1, 1);
-	int w, h, comp;
-	unsigned char* image = stbi_load("assets/testimg.png", &w, &h, &comp, 0);
-	sprite.load_sprite_from_image(game.pallete, image, comp == 4);
-	game.sprites["test"] = sprite;
-
-	// Build scene
-	Scene scene;
-	scene.objects.push_back(object);
-	game.scenes["test"] = std::move(scene);
-	game.init_scene	    = "test";
-
-	// Init game
-	game.init();
+	fs.flush();
+	fs.close();
 
 	if (!SDL_Init(SDL_INIT_VIDEO | SDL_INIT_GAMEPAD | SDL_INIT_AUDIO)) {
 		printf("Error: SDL_Init(): %s\n", SDL_GetError());
@@ -75,22 +58,6 @@ int main(int argc, char* argv[]) {
 	Uint64 now  = SDL_GetPerformanceCounter();
 	Uint64 last = 0;
 	float delta = 0.0;
-
-	{
-		std::fstream fs("res.astar", std::ios::out | std::ios::binary);
-
-		if (!fs) {
-			std::cerr << "Failed to open file for writing!\n";
-			return -1;
-		}
-
-		cereal::BinaryOutputArchive archive(fs);
-
-		archive(game);
-
-		fs.flush();
-		fs.close();
-	}
 
 	while (!quit) {
 		uint64_t current_time = SDL_GetTicks();

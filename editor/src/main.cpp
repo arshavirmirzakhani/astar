@@ -15,7 +15,7 @@
 #include "imgui/imgui_impl_sdl3.h"
 #include "imgui/imgui_impl_sdlrenderer3.h"
 #include "imgui_theme_setup.h"
-#include <cereal/archives/binary.hpp>
+#include <cereal/archives/json.hpp>
 #include <engine/game.h>
 #include <fstream>
 #include <iostream>
@@ -177,9 +177,9 @@ int main(int, char**) {
 
 			if (ImGuiFileDialog::Instance()->Display("choose_file_dialog_project_file")) {
 				if (ImGuiFileDialog::Instance()->IsOk()) {
-					std::ifstream file(ImGuiFileDialog::Instance()->GetFilePathName(), std::ios::binary);
+					std::ifstream file(ImGuiFileDialog::Instance()->GetFilePathName());
 
-					cereal::BinaryInputArchive iarchive(file);
+					cereal::JSONInputArchive iarchive(file);
 
 					iarchive(game);
 
@@ -194,7 +194,7 @@ int main(int, char**) {
 
 			if (ImGuiFileDialog::Instance()->Display("save_project_file_dialog")) {
 				if (ImGuiFileDialog::Instance()->IsOk()) {
-					std::ofstream file(ImGuiFileDialog::Instance()->GetFilePathName(), std::ios::binary);
+					std::ofstream file(ImGuiFileDialog::Instance()->GetFilePathName());
 
 					cereal::BinaryOutputArchive oarchive(file);
 

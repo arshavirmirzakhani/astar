@@ -9,6 +9,13 @@ Game::Game(std::string name) {
 	;
 }
 
+Game::Game() {
+	this->screen_buffer		       = std::vector<unsigned char>(SCREEN_WIDTH * SCREEN_HEIGHT, 0);
+	this->sprites["default"]	       = Sprite(1, 1);
+	this->sprites["default"].sprite_buffer = std::vector<unsigned char>(8 * 8, 0);
+	;
+}
+
 Game::~Game() {}
 
 void Game::init() {
