@@ -6,7 +6,9 @@
 
 #include "editors/globals.h"
 #include "editors/object_editor.h"
+#include "editors/scene_editor.h"
 #include "editors/script_editor.h"
+#include "editors/settings_editor.h"
 #include "editors/sprite_viewer.h"
 #include "font.h"
 #include "imgui/imgui.h"
@@ -24,6 +26,7 @@ static bool is_open_sprite_viewer;
 static bool is_open_object_editor;
 static bool is_open_scene_editor;
 static bool is_open_script_editor;
+static bool is_open_settings_editor;
 
 static char new_project_name[255] = "";
 
@@ -91,12 +94,12 @@ int main(int, char**) {
 	file_save_conf.countSelectionMax = 1;
 	file_save_conf.flags		 = ImGuiFileDialogFlags_ConfirmOverwrite;
 
-	TextEditor editor;
+	TextEditor code_editor;
 
-	editor.SetLanguageDefinition(TextEditor::LanguageDefinition::Lua());
-	editor.SetText(text);
-	editor.SetShowWhitespaces(false);
-	editor.SetShowShortTabGlyphs(true);
+	code_editor.SetLanguageDefinition(TextEditor::LanguageDefinition::Lua());
+	code_editor.SetText("");
+	code_editor.SetShowWhitespaces(false);
+	code_editor.SetShowShortTabGlyphs(true);
 
 	while (!done) {
 		SDL_Event event;
@@ -105,8 +108,7 @@ int main(int, char**) {
 			ImGui_ImplSDL3_ProcessEvent(&event);
 			if (event.type == SDL_EVENT_QUIT)
 				done = true;
-			if (event.type == SDL_EVENT_WINDOW_CLOSE_REQUESTED &&
-			    event.window.windowID == SDL_GetWindowID(window))
+			if (event.type == SDL_EVENT_WINDOW_CLOSE_REQUESTED && event.window.windowID == SDL_GetWindowID(window))
 				done = true;
 		}
 
@@ -125,9 +127,8 @@ int main(int, char**) {
 		ImGui::SetNextWindowSize(viewport->Size);
 		ImGui::SetNextWindowViewport(viewport->ID);
 
-		ImGuiWindowFlags window_flags = ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize |
-						ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoScrollbar |
-						ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoBringToFrontOnFocus |
+		ImGuiWindowFlags window_flags = ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove |
+						ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoBringToFrontOnFocus |
 						ImGuiWindowFlags_NoNavFocus;
 
 		if (ImGui::Begin("BaseWindow", nullptr, window_flags)) {
@@ -138,8 +139,7 @@ int main(int, char**) {
 			ImGui::Text("A-STAR engine editor");
 			ImGui::Text("by Arshavir Mirzakhani");
 
-			ImGui::TextColored(ImVec4(1.0f, 1.0f, 0.0f, 1.0f),
-					   std::string("Editing project: " + game.name).c_str());
+			ImGui::TextColored(ImVec4(1.0f, 1.0f, 0.0f, 1.0f), std::string("Editing project: " + game.name).c_str());
 			ImGui::SeparatorText("Project");
 
 			if (ImGui::Button("New")) {
@@ -172,14 +172,12 @@ int main(int, char**) {
 			}
 
 			if (ImGui::Button("Open")) {
-				ImGuiFileDialog::Instance()->OpenDialog("choose_file_dialog_project_file",
-									"Choose project file", ".astar", file_conf);
+				ImGuiFileDialog::Instance()->OpenDialog("choose_file_dialog_project_file", "Choose project file", ".astar", file_conf);
 			}
 
 			if (ImGuiFileDialog::Instance()->Display("choose_file_dialog_project_file")) {
 				if (ImGuiFileDialog::Instance()->IsOk()) {
-					std::ifstream file(ImGuiFileDialog::Instance()->GetFilePathName(),
-							   std::ios::binary);
+					std::ifstream file(ImGuiFileDialog::Instance()->GetFilePathName(), std::ios::binary);
 
 					cereal::BinaryInputArchive iarchive(file);
 
@@ -191,14 +189,12 @@ int main(int, char**) {
 			}
 			if (ImGui::Button("Save as")) {
 
-				ImGuiFileDialog::Instance()->OpenDialog("save_project_file_dialog", "Save", ".astar",
-									file_conf);
+				ImGuiFileDialog::Instance()->OpenDialog("save_project_file_dialog", "Save", ".astar", file_conf);
 			}
 
 			if (ImGuiFileDialog::Instance()->Display("save_project_file_dialog")) {
 				if (ImGuiFileDialog::Instance()->IsOk()) {
-					std::ofstream file(ImGuiFileDialog::Instance()->GetFilePathName(),
-							   std::ios::binary);
+					std::ofstream file(ImGuiFileDialog::Instance()->GetFilePathName(), std::ios::binary);
 
 					cereal::BinaryOutputArchive oarchive(file);
 
@@ -208,6 +204,10 @@ int main(int, char**) {
 			}
 
 			ImGui::SeparatorText("Editors");
+
+			if (ImGui::Button("Edit project settings")) {
+				is_open_settings_editor = (is_open_settings_editor) ? false : true;
+			}
 
 			if (ImGui::Button("View sprites")) {
 				is_open_sprite_viewer = (is_open_sprite_viewer) ? false : true;
@@ -227,6 +227,10 @@ int main(int, char**) {
 
 			ImGui::End();
 
+			if (is_open_settings_editor) {
+				show_settings_editor(game);
+			}
+
 			if (is_open_sprite_viewer) {
 				show_sprite_viewer(game, renderer);
 			}
@@ -236,7 +240,11 @@ int main(int, char**) {
 			}
 
 			if (is_open_script_editor) {
-				show_script_editor(game, editor);
+				show_script_editor(game, code_editor);
+			}
+
+			if (is_open_scene_editor) {
+				show_scene_editor(game, renderer);
 			}
 		}
 		ImGui::End();

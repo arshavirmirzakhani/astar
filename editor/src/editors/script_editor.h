@@ -3,7 +3,6 @@
 #include "imgui/TextEditor.h"
 #include "imgui/imgui.h"
 
-static std::string text		      = "main";
 static std::string selected_type_name = "";
 
 void show_script_editor(Game& game, TextEditor& editor) {
