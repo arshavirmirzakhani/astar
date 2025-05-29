@@ -29,10 +29,7 @@ int main(int argc, char* argv[]) {
 	cereal::JSONInputArchive archive(fs);
 
 	Game game;
-
-	SDL_LogDebug(SDL_LOG_CATEGORY_TEST, "before input");
 	archive(game);
-	SDL_LogDebug(SDL_LOG_CATEGORY_TEST, "after input");
 
 	fs.flush();
 	fs.close();

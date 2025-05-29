@@ -196,7 +196,7 @@ int main(int, char**) {
 				if (ImGuiFileDialog::Instance()->IsOk()) {
 					std::ofstream file(ImGuiFileDialog::Instance()->GetFilePathName());
 
-					cereal::BinaryOutputArchive oarchive(file);
+					cereal::JSONOutputArchive oarchive(file);
 
 					oarchive(game);
 				}

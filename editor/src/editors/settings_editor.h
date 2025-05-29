@@ -11,7 +11,7 @@ void show_settings_editor(Game& game) {
 
 	ImGui::InputText("Game name", game.name.data(), 255);
 
-	if (ImGui::BeginCombo("Init scene", game.init_scene.empty() ? "None" : game.init_scene.c_str())) {
+	if (ImGui::BeginCombo("Init Scene", game.init_scene.empty() ? "None" : game.init_scene.c_str())) {
 		for (auto& [name, _] : game.scenes) {
 			bool is_selected = (game.init_scene == name);
 			if (ImGui::Selectable(name.c_str(), is_selected)) {

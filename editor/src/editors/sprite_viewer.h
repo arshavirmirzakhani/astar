@@ -44,10 +44,10 @@ void show_sprite_viewer(Game& game, SDL_Renderer* renderer) {
 	ImGui::Text("Sprites");
 
 	if (ImGui::Button("New"))
-		ImGui::OpenPopup("New sprite");
+		ImGui::OpenPopup("New Sprite");
 	ImGui::SameLine();
 	if (ImGui::Button("Rename"))
-		ImGui::OpenPopup("Rename sprite");
+		ImGui::OpenPopup("Rename Sprite");
 	ImGui::SameLine();
 	if (ImGui::Button("Delete")) {
 		if (game.sprites.size() > 1) {

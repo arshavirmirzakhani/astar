@@ -6,8 +6,9 @@
 static char new_object_type_name[255] = "";
 static char new_animation_name[255]   = "";
 
-static std::string selected_object_type = "";
-static std::string selected_animation	= "";
+static std::string selected_object_type		 = "";
+static std::string selected_animation		 = "";
+static std::string selected_animation_add_sprite = "";
 
 static float object_editor_zoom = 1.0f;
 
@@ -105,6 +106,39 @@ void show_object_editor(Game& game, SDL_Renderer* renderer) {
 			auto& sprites = obj_type.all_animation_states[selected_animation];
 
 			ImGui::Separator();
+
+			if (ImGui::Button("Add Sprite")) {
+				ImGui::OpenPopup("add_sprite_to_animation");
+			}
+
+			if (ImGui::BeginPopup("add_sprite_to_animation")) {
+
+				if (ImGui::BeginCombo("Sprites", selected_animation_add_sprite.empty() ? "None" : selected_animation_add_sprite.c_str())) {
+					for (auto& [name, _] : game.sprites) {
+						bool is_selected = (selected_animation_add_sprite == name);
+						if (ImGui::Selectable(name.c_str(), is_selected)) {
+							selected_animation_add_sprite = name;
+						}
+						if (is_selected)
+							ImGui::SetItemDefaultFocus();
+					}
+					ImGui::EndCombo();
+				}
+
+				if (ImGui::Button("Add")) {
+					obj_type.all_animation_states[selected_animation].push_back(
+					    std::make_pair(selected_animation_add_sprite, SpriteInfo()));
+
+					ImGui::CloseCurrentPopup();
+				}
+
+				ImGui::SameLine();
+
+				if (ImGui::Button("Cancel"))
+					ImGui::CloseCurrentPopup();
+				ImGui::EndPopup();
+			}
+
 			if (sprites.empty()) {
 				ImGui::TextDisabled("(No sprites)");
 			} else {
@@ -138,46 +172,43 @@ void show_object_editor(Game& game, SDL_Renderer* renderer) {
 							bool size_changed   = last_width != sprite.width * 8 || last_height != sprite.height * 8;
 							bool sprite_changed = last_previewed_sprite != sprite_data.first;
 
-							if (size_changed || sprite_changed) {
-								if (object_type_preview_texture) {
-									SDL_DestroyTexture(object_type_preview_texture);
-									object_type_preview_texture = nullptr;
-								}
-
-								object_type_preview_texture =
-								    SDL_CreateTexture(renderer, SDL_PIXELFORMAT_RGBA8888, SDL_TEXTUREACCESS_TARGET,
-										      sprite.width * 8, sprite.height * 8);
-
-								SDL_SetTextureBlendMode(object_type_preview_texture, SDL_BLENDMODE_BLEND);
-								SDL_SetTextureScaleMode(object_type_preview_texture, SDL_SCALEMODE_NEAREST);
-
-								SDL_Texture* oldTarget = SDL_GetRenderTarget(renderer);
-								SDL_SetRenderTarget(renderer, object_type_preview_texture);
-								SDL_SetRenderDrawColor(renderer, 0, 0, 0, 0);
-								SDL_RenderClear(renderer);
-
-								for (unsigned int y = 0; y < sprite.height * 8; y++) {
-									for (unsigned int x = 0; x < sprite.width * 8; x++) {
-										uint8_t pixel = sprite.sprite_buffer[y * sprite.width * 8 + x];
-										if (pixel == 0)
-											continue;
-
-										Color color = game.pallete.colors[pixel];
-										if (color.a == 0)
-											continue;
-
-										SDL_SetRenderDrawColor(renderer, color.r, color.g, color.b, color.a);
-										SDL_FRect rect = {(float)x, (float)y, 1, 1};
-										SDL_RenderFillRect(renderer, &rect);
-									}
-								}
-
-								SDL_SetRenderTarget(renderer, oldTarget);
-
-								last_previewed_sprite = sprite_data.first;
-								last_width	      = sprite.width * 8;
-								last_height	      = sprite.height * 8;
+							if (object_type_preview_texture) {
+								SDL_DestroyTexture(object_type_preview_texture);
+								object_type_preview_texture = nullptr;
 							}
+
+							object_type_preview_texture = SDL_CreateTexture(
+							    renderer, SDL_PIXELFORMAT_RGBA8888, SDL_TEXTUREACCESS_TARGET, sprite.width * 8, sprite.height * 8);
+
+							SDL_SetTextureBlendMode(object_type_preview_texture, SDL_BLENDMODE_BLEND);
+							SDL_SetTextureScaleMode(object_type_preview_texture, SDL_SCALEMODE_NEAREST);
+
+							SDL_Texture* oldTarget = SDL_GetRenderTarget(renderer);
+							SDL_SetRenderTarget(renderer, object_type_preview_texture);
+							SDL_SetRenderDrawColor(renderer, 0, 0, 0, 0);
+							SDL_RenderClear(renderer);
+
+							for (unsigned int y = 0; y < sprite.height * 8; y++) {
+								for (unsigned int x = 0; x < sprite.width * 8; x++) {
+									uint8_t pixel = sprite.sprite_buffer[y * sprite.width * 8 + x];
+									if (pixel == 0)
+										continue;
+
+									Color color = game.pallete.colors[pixel];
+									if (color.a == 0)
+										continue;
+
+									SDL_SetRenderDrawColor(renderer, color.r, color.g, color.b, color.a);
+									SDL_FRect rect = {(float)x, (float)y, 1, 1};
+									SDL_RenderFillRect(renderer, &rect);
+								}
+							}
+
+							SDL_SetRenderTarget(renderer, oldTarget);
+
+							last_previewed_sprite = sprite_data.first;
+							last_width	      = sprite.width * 8;
+							last_height	      = sprite.height * 8;
 
 							ImGui::Text("%s", sprite_data.first.c_str());
 							if (object_type_preview_texture) {
