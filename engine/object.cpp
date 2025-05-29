@@ -43,7 +43,7 @@ void Object::process(float delta, std::vector<KEY_CODE> input_codes) {
 		return (std::find(input_codes.begin(), input_codes.end(), keycode_map[key]) != input_codes.end()) ? true : false;
 	});
 
-	this->lua_engine->script(this->type.script);
+	this->lua_engine->script("main()");
 
 	this->position_x = this->lua_engine->get<float>("POSITION_X");
 	this->position_y = this->lua_engine->get<float>("POSITION_Y");
