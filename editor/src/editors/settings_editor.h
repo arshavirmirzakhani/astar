@@ -10,7 +10,7 @@ void show_settings_editor(Game& game) {
 
 	ImGui::BeginGroup();
 
-	ImGui::InputText("Game name", &game.name, 255);
+	ImGui::InputText("Game name", &game.name);
 
 	if (ImGui::BeginCombo("Init Scene", game.init_scene.empty() ? "None" : game.init_scene.c_str())) {
 		for (auto& [name, _] : game.scenes) {

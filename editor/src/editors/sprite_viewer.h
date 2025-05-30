@@ -57,7 +57,7 @@ void show_sprite_viewer(Game& game, SDL_Renderer* renderer) {
 	}
 
 	// New Sprite Popup
-	if (ImGui::BeginPopup("New sprite")) {
+	if (ImGui::BeginPopup("New Sprite")) {
 		ImGui::InputText("Sprite name", new_sprite_name, 255);
 		if (game.sprites.find(new_sprite_name) != game.sprites.end()) {
 			ImGui::TextColored(ImVec4(1, 0, 0, 1), "Sprite already exists");
@@ -73,7 +73,7 @@ void show_sprite_viewer(Game& game, SDL_Renderer* renderer) {
 	}
 
 	// Rename Sprite Popup
-	if (ImGui::BeginPopup("Rename sprite")) {
+	if (ImGui::BeginPopup("Rename Sprite")) {
 		ImGui::InputText("New name", new_sprite_name, 255);
 		if (game.sprites.find(new_sprite_name) != game.sprites.end()) {
 			ImGui::TextColored(ImVec4(1, 0, 0, 1), "Name already taken");

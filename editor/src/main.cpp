@@ -142,7 +142,7 @@ int main(int, char**) {
 			ImGui::TextColored(ImVec4(1.0f, 1.0f, 0.0f, 1.0f), std::string("Editing project: " + game.name).c_str());
 			ImGui::SeparatorText("Project");
 
-			if (ImGui::Button("New")) {
+			if (ImGui::Button("New", ImVec2(ImGui::GetContentRegionAvail().x, 0))) {
 				ImGui::OpenPopup("New project");
 			}
 
@@ -171,7 +171,7 @@ int main(int, char**) {
 				ImGui::EndPopup();
 			}
 
-			if (ImGui::Button("Open")) {
+			if (ImGui::Button("Open", ImVec2(ImGui::GetContentRegionAvail().x, 0))) {
 				ImGuiFileDialog::Instance()->OpenDialog("choose_file_dialog_project_file", "Choose project file", ".astar", file_conf);
 			}
 
@@ -187,7 +187,7 @@ int main(int, char**) {
 				}
 				ImGuiFileDialog::Instance()->Close();
 			}
-			if (ImGui::Button("Save as")) {
+			if (ImGui::Button("Save as", ImVec2(ImGui::GetContentRegionAvail().x, 0))) {
 
 				ImGuiFileDialog::Instance()->OpenDialog("save_project_file_dialog", "Save", ".astar", file_conf);
 			}
@@ -205,23 +205,23 @@ int main(int, char**) {
 
 			ImGui::SeparatorText("Editors");
 
-			if (ImGui::Button("Edit project settings")) {
+			if (ImGui::Button("Edit project settings", ImVec2(ImGui::GetContentRegionAvail().x, 0))) {
 				is_open_settings_editor = (is_open_settings_editor) ? false : true;
 			}
 
-			if (ImGui::Button("View sprites")) {
+			if (ImGui::Button("View sprites", ImVec2(ImGui::GetContentRegionAvail().x, 0))) {
 				is_open_sprite_viewer = (is_open_sprite_viewer) ? false : true;
 			}
 
-			if (ImGui::Button("Edit Objects")) {
+			if (ImGui::Button("Edit Objects", ImVec2(ImGui::GetContentRegionAvail().x, 0))) {
 				is_open_object_editor = (is_open_object_editor) ? false : true;
 			}
 
-			if (ImGui::Button("Edit scripts")) {
+			if (ImGui::Button("Edit scripts", ImVec2(ImGui::GetContentRegionAvail().x, 0))) {
 				is_open_script_editor = (is_open_script_editor) ? false : true;
 			}
 
-			if (ImGui::Button("Edit scenes")) {
+			if (ImGui::Button("Edit scenes", ImVec2(ImGui::GetContentRegionAvail().x, 0))) {
 				is_open_scene_editor = (is_open_scene_editor) ? false : true;
 			}
 
