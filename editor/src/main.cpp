@@ -140,6 +140,7 @@ int main(int, char**) {
 			ImGui::Text("by Arshavir Mirzakhani");
 
 			ImGui::TextColored(ImVec4(1.0f, 1.0f, 0.0f, 1.0f), std::string("Editing project: " + game.name).c_str());
+			ImGui::TextColored(ImVec4(1.0f, 1.0f, 0.0f, 1.0f), std::string("FPS: " + std::to_string(ImGui::GetIO().Framerate)).c_str());
 			ImGui::SeparatorText("Project");
 
 			if (ImGui::Button("New", ImVec2(ImGui::GetContentRegionAvail().x, 0))) {

@@ -17,12 +17,15 @@ static unsigned int selected_sprite_index = 0;
 
 std::string image_path			 = "";
 std::string selected_sprite		 = "default";
+std::string prev_selected_sprite	 = "default";
 SDL_Texture* sprite_view_preview_texture = nullptr;
 SDL_FRect sprite_preview_rect;
 static char new_sprite_name[255] = "";
 
 static float sprite_view_zoom = 1.0f;
 static float prevZoom	      = sprite_view_zoom;
+
+static bool is_sprite_changed = true;
 
 ImVec4 toImVec4(unsigned char& r, unsigned char& g, unsigned char& b, unsigned char& a) { return ImVec4(r / 255.0f, g / 255.0f, b / 255.0f, a / 255.0f); }
 
@@ -124,6 +127,7 @@ void show_sprite_viewer(Game& game, SDL_Renderer* renderer) {
 		if (ImGuiFileDialog::Instance()->IsOk()) {
 			image_path = ImGuiFileDialog::Instance()->GetFilePathName();
 			regenerate_sprite_from_image(image_path, game.sprites[selected_sprite], game.pallete);
+			is_sprite_changed = true;
 		}
 		ImGuiFileDialog::Instance()->Close();
 	}
@@ -133,6 +137,7 @@ void show_sprite_viewer(Game& game, SDL_Renderer* renderer) {
 			game.pallete.load_pallete_from_hex(read_pallete_file(path));
 
 			game.sprites[selected_sprite].regenerate_with_current_palette(game.pallete, game.sprites[selected_sprite].original_has_alpha);
+			is_sprite_changed = true;
 		}
 		ImGuiFileDialog::Instance()->Close();
 	}
@@ -201,34 +206,43 @@ void show_sprite_viewer(Game& game, SDL_Renderer* renderer) {
 		panOffset.y += delta.y;
 	}
 
-	// Render to preview texture
-	if (sprite_view_preview_texture)
-		SDL_DestroyTexture(sprite_view_preview_texture);
-	sprite_view_preview_texture = SDL_CreateTexture(renderer, SDL_PIXELFORMAT_RGBA8888, SDL_TEXTUREACCESS_TARGET, game.sprites[selected_sprite].width * 8,
-							game.sprites[selected_sprite].height * 8);
-	SDL_SetTextureScaleMode(sprite_view_preview_texture, SDL_SCALEMODE_NEAREST);
-	SDL_SetTextureBlendMode(sprite_view_preview_texture, SDL_BLENDMODE_BLEND);
-
-	SDL_Texture* oldTarget = SDL_GetRenderTarget(renderer);
-	SDL_SetRenderTarget(renderer, sprite_view_preview_texture);
-
-	for (unsigned int y = 0; y < game.sprites[selected_sprite].height * 8; y++) {
-		for (unsigned int x = 0; x < game.sprites[selected_sprite].width * 8; x++) {
-			uint8_t pixel = game.sprites[selected_sprite].sprite_buffer[y * game.sprites[selected_sprite].width * 8 + x];
-			if (pixel == 0)
-				continue;
-
-			Color color = game.pallete.colors[pixel];
-			if (color.a == 0)
-				continue;
-
-			SDL_SetRenderDrawColor(renderer, color.r, color.g, color.b, color.a);
-			sprite_preview_rect = {(float)x, (float)y, 1, 1};
-			SDL_RenderFillRect(renderer, &sprite_preview_rect);
-		}
+	if (prev_selected_sprite != selected_sprite) {
+		prev_selected_sprite = selected_sprite;
+		is_sprite_changed    = true;
 	}
 
-	SDL_SetRenderTarget(renderer, oldTarget);
+	if (is_sprite_changed) {
+		// Render to preview texture
+		if (sprite_view_preview_texture)
+			SDL_DestroyTexture(sprite_view_preview_texture);
+		sprite_view_preview_texture = SDL_CreateTexture(renderer, SDL_PIXELFORMAT_RGBA8888, SDL_TEXTUREACCESS_TARGET,
+								game.sprites[selected_sprite].width * 8, game.sprites[selected_sprite].height * 8);
+		SDL_SetTextureScaleMode(sprite_view_preview_texture, SDL_SCALEMODE_NEAREST);
+		SDL_SetTextureBlendMode(sprite_view_preview_texture, SDL_BLENDMODE_BLEND);
+
+		SDL_Texture* oldTarget = SDL_GetRenderTarget(renderer);
+		SDL_SetRenderTarget(renderer, sprite_view_preview_texture);
+
+		for (unsigned int y = 0; y < game.sprites[selected_sprite].height * 8; y++) {
+			for (unsigned int x = 0; x < game.sprites[selected_sprite].width * 8; x++) {
+				unsigned char pixel = game.sprites[selected_sprite].sprite_buffer[y * game.sprites[selected_sprite].width * 8 + x];
+				if (pixel == 0)
+					continue;
+
+				Color color = game.pallete.colors[pixel];
+				if (color.a == 0)
+					continue;
+
+				SDL_SetRenderDrawColor(renderer, color.r, color.g, color.b, color.a);
+				sprite_preview_rect = {(float)x, (float)y, 1, 1};
+				SDL_RenderFillRect(renderer, &sprite_preview_rect);
+			}
+		}
+
+		SDL_SetRenderTarget(renderer, oldTarget);
+
+		is_sprite_changed = false;
+	}
 
 	// Draw image on canvas
 	ImVec2 imageSize = {sprite_view_zoom * game.sprites[selected_sprite].width * 8, sprite_view_zoom * game.sprites[selected_sprite].height * 8};

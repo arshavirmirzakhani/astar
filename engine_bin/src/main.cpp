@@ -17,6 +17,7 @@ float MOUSE_POS_X = 0;
 float MOUSE_POS_Y = 0;
 
 int main(int argc, char* argv[]) {
+	Game game;
 	SDL_FRect rect;
 
 	std::fstream fs("res.astar", std::ios::in);
@@ -26,13 +27,17 @@ int main(int argc, char* argv[]) {
 		return -1;
 	}
 
-	cereal::JSONInputArchive archive(fs);
+	try {
+		cereal::JSONInputArchive archive(fs);
 
-	Game game;
-	archive(game);
+		archive(game);
 
-	fs.flush();
-	fs.close();
+		fs.flush();
+		fs.close();
+	} catch (const std::exception& _) {
+		SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "Failed to load game data!");
+		return -1;
+	}
 
 	if (!SDL_Init(SDL_INIT_VIDEO | SDL_INIT_GAMEPAD | SDL_INIT_AUDIO)) {
 		printf("Error: SDL_Init(): %s\n", SDL_GetError());

@@ -164,14 +164,6 @@ void show_object_editor(Game& game, SDL_Renderer* renderer) {
 								continue;
 							}
 
-							// Recreate texture only if needed
-							static std::string last_previewed_sprite;
-							static int last_width  = 0;
-							static int last_height = 0;
-
-							bool size_changed   = last_width != sprite.width * 8 || last_height != sprite.height * 8;
-							bool sprite_changed = last_previewed_sprite != sprite_data.first;
-
 							if (object_type_preview_texture) {
 								SDL_DestroyTexture(object_type_preview_texture);
 								object_type_preview_texture = nullptr;
@@ -190,7 +182,7 @@ void show_object_editor(Game& game, SDL_Renderer* renderer) {
 
 							for (unsigned int y = 0; y < sprite.height * 8; y++) {
 								for (unsigned int x = 0; x < sprite.width * 8; x++) {
-									uint8_t pixel = sprite.sprite_buffer[y * sprite.width * 8 + x];
+									unsigned char pixel = sprite.sprite_buffer[y * sprite.width * 8 + x];
 									if (pixel == 0)
 										continue;
 
@@ -205,10 +197,6 @@ void show_object_editor(Game& game, SDL_Renderer* renderer) {
 							}
 
 							SDL_SetRenderTarget(renderer, oldTarget);
-
-							last_previewed_sprite = sprite_data.first;
-							last_width	      = sprite.width * 8;
-							last_height	      = sprite.height * 8;
 
 							ImGui::Text("%s", sprite_data.first.c_str());
 							if (object_type_preview_texture) {

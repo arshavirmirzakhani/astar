@@ -2,12 +2,15 @@
 
 class Scene {
       public:
-	std::vector<Object> objects;
-
 	Scene();
 	~Scene();
 
-	void add_object(Object object);
+	void add_object(std::string name, Object object);
 
-	template <class Archive> void serialize(Archive& archive) { archive(objects); }
+	std::map<std::string, Object> objects;
+
+	int width;
+	int height;
+
+	template <class Archive> void serialize(Archive& archive) { archive(objects, width, height); }
 };

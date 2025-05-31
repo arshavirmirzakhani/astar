@@ -21,8 +21,9 @@ Game::~Game() {}
 void Game::init() {
 	for (auto& [name, scene] : this->scenes) {
 		for (auto& object : scene.objects) {
-			object.type	      = this->object_types[object.type_name];
-			object.current_sprite = &this->sprites[object.type.all_animation_states[object.current_animation_state][object.current_frame].first];
+			object.second.type = this->object_types[object.second.type_name];
+			object.second.current_sprite =
+			    &this->sprites[object.second.type.all_animation_states[object.second.current_animation_state][object.second.current_frame].first];
 		}
 	}
 
@@ -31,8 +32,9 @@ void Game::init() {
 
 void Game::process(float delta, std::vector<KEY_CODE> input_codes) {
 	for (auto& object : this->scenes[current_scene].objects) {
-		object.process(delta, input_codes);
-		object.current_sprite = &this->sprites[object.type.all_animation_states[object.current_animation_state][object.current_frame].first];
+		object.second.process(delta, input_codes);
+		object.second.current_sprite =
+		    &this->sprites[object.second.type.all_animation_states[object.second.current_animation_state][object.second.current_frame].first];
 	}
 }
 
@@ -40,10 +42,10 @@ void Game::render() {
 	this->screen_buffer = std::vector<unsigned char>(SCREEN_WIDTH * SCREEN_HEIGHT, 0);
 
 	for (auto& current_object : this->scenes[this->current_scene].objects) {
-		Sprite sprite = *current_object.current_sprite;
+		Sprite sprite = *current_object.second.current_sprite;
 
-		int sprite_x_start = (int)roundf(current_object.position_x) - (int)CAMERA_POSITION_X;
-		int sprite_y_start = (int)roundf(current_object.position_y) - (int)CAMERA_POSITION_Y;
+		int sprite_x_start = (int)roundf(current_object.second.position_x) - (int)CAMERA_POSITION_X;
+		int sprite_y_start = (int)roundf(current_object.second.position_y) - (int)CAMERA_POSITION_Y;
 
 		int sprite_pixel_width	= sprite.width * 8;
 		int sprite_pixel_height = sprite.height * 8;
