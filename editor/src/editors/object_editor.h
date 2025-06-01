@@ -21,10 +21,10 @@ void show_object_editor(Game& game, SDL_Renderer* renderer) {
 	ImGui::BeginGroup();
 	// === Create new ObjectType ===
 	if (ImGui::Button("New Object Type")) {
-		ImGui::OpenPopup("new_object_popup");
+		ImGui::OpenPopup("new_object_type_popup");
 	}
 
-	if (ImGui::BeginPopup("new_object_popup")) {
+	if (ImGui::BeginPopup("new_object_type_popup")) {
 		ImGui::InputText("Name", new_object_type_name, 255);
 		if (ImGui::Button("Create")) {
 			std::string name = new_object_type_name;

@@ -15,7 +15,7 @@ cmake_args = [
 build_config = "Debug"
 
 if len(sys.argv) > 1:
-    if sys.argv[1] == "release": 
+    if sys.argv[1].lower() == "release": 
         build_config = "Release"
 
 if not os.path.isdir(build_dir):

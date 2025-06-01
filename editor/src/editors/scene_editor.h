@@ -22,6 +22,10 @@ static bool is_scene_changed_bg	     = true;
 static bool is_scene_changed_tilemap = true;
 static bool is_scene_changed_objects = true;
 
+static std::string selected_object_in_scene = "";
+static char new_object_name[255];
+static std::string selected_type = "";
+
 void show_scene_editor(Game& game, SDL_Renderer* renderer) {
 	ImGui::Begin("Scene editor");
 
@@ -92,9 +96,49 @@ void show_scene_editor(Game& game, SDL_Renderer* renderer) {
 			game.scenes[selected_scene].height = 1;
 		}
 
+		if (ImGui::Button("New Object ")) {
+			ImGui::OpenPopup("new_object_popup");
+		}
+
+		if (ImGui::BeginPopup("new_object_popup")) {
+			ImGui::InputText("Name", new_object_name, 255);
+
+			if (ImGui::BeginCombo("Select Object Type", selected_type.empty() ? "None" : selected_type.c_str())) {
+				for (auto& [name, _] : game.object_types) {
+					bool is_selected = (selected_type == name);
+					if (ImGui::Selectable(name.c_str(), is_selected)) {
+						selected_type = name;
+					}
+					if (is_selected)
+						ImGui::SetItemDefaultFocus();
+				}
+				ImGui::EndCombo();
+			}
+
+			if (ImGui::Button("Create")) {
+				std::string name = new_object_name;
+				if (!name.empty() && !selected_type.empty() && game.object_types.find(name) == game.object_types.end()) {
+					game.scenes[selected_scene].add_object(new_object_name, Object(selected_type));
+					selected_object_in_scene = name;
+				}
+				ImGui::CloseCurrentPopup();
+			}
+			ImGui::SameLine();
+			if (ImGui::Button("Cancel"))
+				ImGui::CloseCurrentPopup();
+			ImGui::EndPopup();
+		}
+
+		for (auto& [name, object] : game.scenes[selected_scene].objects) {
+			bool is_selected = (selected_object_in_scene == name);
+			if (ImGui::Selectable(name.c_str(), is_selected, 0, ImVec2(200, 0))) {
+				selected_object_in_scene = name;
+			}
+		}
+
 		ImGui::EndGroup();
 
-		ImGui::NewLine();
+		ImGui::SameLine();
 
 		ImGui::BeginGroup();
 
@@ -106,6 +150,8 @@ void show_scene_editor(Game& game, SDL_Renderer* renderer) {
 		ImVec2 canvas_pos = ImGui::GetCursorScreenPos();
 		if (canvas_size.x <= 0 || canvas_size.y <= 0) {
 			ImGui::EndChild();
+			ImGui::EndGroup();
+			ImGui::EndGroup();
 			ImGui::End();
 			return;
 		}
@@ -189,6 +235,7 @@ void show_scene_editor(Game& game, SDL_Renderer* renderer) {
 
 		ImGui::GetWindowDrawList()->AddImage((ImTextureID)scene_editor_preview_texture, imagePos,
 						     ImVec2(imagePos.x + imageSize.x, imagePos.y + imageSize.y));
+
 		ImGui::EndChild();
 		ImGui::EndGroup();
 	}
