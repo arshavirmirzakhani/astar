@@ -6,13 +6,6 @@
 #include <string>
 #include <vector>
 
-struct SpriteInfo {
-	unsigned int begin_x = 0;
-	unsigned int begin_y = 0;
-	unsigned int width   = 1;
-	unsigned int height  = 1;
-	template <class Archive> void serialize(Archive& archive) { archive(begin_x, begin_y, width, height); }
-};
 class ObjectType {
       private:
 	/* data */

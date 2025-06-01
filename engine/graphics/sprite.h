@@ -1,6 +1,13 @@
 #pragma once
 #include "../global.h"
 #include <vector>
+struct SpriteInfo {
+	unsigned int begin_x = 0;
+	unsigned int begin_y = 0;
+	unsigned int width   = 1;
+	unsigned int height  = 1;
+	template <class Archive> void serialize(Archive& archive) { archive(begin_x, begin_y, width, height); }
+};
 
 class Sprite {
       public:
@@ -20,7 +27,5 @@ class Sprite {
 	std::vector<unsigned char> original_image_data;
 	bool original_has_alpha = false;
 
-	template <class Archive> void serialize(Archive& archive) {
-		archive(sprite_buffer, width, height, original_image_data, original_has_alpha);
-	}
+	template <class Archive> void serialize(Archive& archive) { archive(sprite_buffer, width, height, original_image_data, original_has_alpha); }
 };
