@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg id="Layer_1" data-name="Layer 1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 270 270">
+  <defs>
+    <style>
+      .cls-1, .cls-2 {
+        stroke-width: 0px;
+      }
+
+      .cls-1, .cls-3 {
+        fill: #000;
+      }
+
+      .cls-2 {
+        fill: #f7931e;
+      }
+
+      .cls-3 {
+        font-family: Pixellari, Pixellari;
+        font-size: 12px;
+      }
+
+      .cls-4 {
+        fill: #fff;
+        stroke: #000;
+        stroke-miterlimit: 10;
+        stroke-width: 20px;
+      }
+    </style>
+  </defs>
+  <rect class="cls-4" x="10" y="10" width="250" height="250"/>
+  <g>
+    <g>
+      <path class="cls-1" d="M67.43,211.09h-3.22v-12.87h-12.87v12.87h-6.44v-28.96h3.22v-3.22h3.22v-3.22h12.87v3.22h3.22v3.22h3.22v28.96h-3.22ZM61,191.79h3.22v-6.44h-3.22v-3.22h-6.44v3.22h-3.22v6.44h9.65Z"/>
+      <path class="cls-1" d="M93.17,198.22h-16.09v-6.44h19.31v6.44h-3.22Z"/>
+      <path class="cls-1" d="M122.13,211.09h-16.09v-3.22h-3.22v-6.44h6.44v3.22h12.87v-9.65h-16.09v-3.22h-3.22v-12.87h3.22v-3.22h19.31v3.22h3.22v6.44h-6.44v-3.22h-12.87v6.44h16.09v3.22h3.22v16.09h-3.22v3.22h-3.22Z"/>
+      <path class="cls-1" d="M147.87,211.09h-3.22v-28.96h-9.65v-6.44h25.74v6.44h-9.65v28.96h-3.22Z"/>
+      <path class="cls-1" d="M189.7,211.09h-3.22v-12.87h-12.87v12.87h-6.44v-28.96h3.22v-3.22h3.22v-3.22h12.87v3.22h3.22v3.22h3.22v28.96h-3.22ZM183.26,191.79h3.22v-6.44h-3.22v-3.22h-6.44v3.22h-3.22v6.44h9.65Z"/>
+      <path class="cls-1" d="M221.87,211.09h-3.22v-16.09h-12.87v16.09h-6.44v-35.39h22.52v3.22h3.22v12.87h-3.22v3.22h3.22v16.09h-3.22ZM215.44,188.57h3.22v-6.44h-12.87v6.44h9.65Z"/>
+    </g>
+    <g>
+      <path class="cls-1" d="M150.25,148.91h-7.5v-30h-30v30h-15v-67.5h7.5v-7.5h7.5v-7.5h30v7.5h7.5v7.5h7.5v67.5h-7.5ZM135.25,103.91h7.5v-15h-7.5v-7.5h-15v7.5h-7.5v15h22.5Z"/>
+      <path class="cls-2" d="M202.75,103.91h-7.5v-7.5h-15v7.5h-15v-15h7.5v-7.5h-7.5v-15h15v-7.5h15v7.5h15v15h-7.5v7.5h7.5v15h-7.5Z"/>
+    </g>
+  </g>
+  <text class="cls-3" transform="translate(76.13 236.24)"><tspan x="0" y="0">RETRO GAME ENGINE</tspan></text>
+</svg>
