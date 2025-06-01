@@ -44,12 +44,13 @@ class Object {
 	std::string current_animation_state;
 
 	Sprite* current_sprite;
+	SpriteInfo sprite_info;
 
 	std::shared_ptr<sol::state> lua_engine;
 
 	void process(float delta, std::vector<KEY_CODE> input_codes);
 
 	template <class Archive> void serialize(Archive& archive) {
-		archive(name, position_x, position_y, type_name, current_frame, frame_per_tick, current_animation_state);
+		archive(name, position_x, position_y, type_name, sprite_info, current_frame, frame_per_tick, current_animation_state);
 	}
 };

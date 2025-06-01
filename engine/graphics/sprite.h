@@ -1,6 +1,7 @@
 #pragma once
 #include "../global.h"
 #include <vector>
+
 struct SpriteInfo {
 	unsigned int begin_x = 0;
 	unsigned int begin_y = 0;
