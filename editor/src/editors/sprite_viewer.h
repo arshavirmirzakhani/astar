@@ -1,9 +1,9 @@
 #include "globals.h"
 #include "imgui/ImGuiFileDialog.h"
 #include "imgui/imgui.h"
-#include "imgui/imgui_impl_sdl3.h"
-#include "imgui/imgui_impl_sdlrenderer3.h"
-#include <SDL3/SDL.h>
+#include "imgui/imgui_impl_sdl2.h"
+#include "imgui/imgui_impl_sdlrenderer2.h"
+#include <SDL.h>
 #include <algorithm>
 #include <engine/game.h>
 #include <fstream>
@@ -19,7 +19,7 @@ std::string image_path			 = "";
 std::string selected_sprite		 = "default";
 std::string prev_selected_sprite	 = "default";
 SDL_Texture* sprite_view_preview_texture = nullptr;
-SDL_FRect sprite_preview_rect;
+SDL_Rect sprite_preview_rect;
 static char new_sprite_name[255] = "";
 
 static float sprite_view_zoom = 1.0f;
@@ -217,7 +217,7 @@ void show_sprite_viewer(Game& game, SDL_Renderer* renderer) {
 			SDL_DestroyTexture(sprite_view_preview_texture);
 		sprite_view_preview_texture = SDL_CreateTexture(renderer, SDL_PIXELFORMAT_RGBA8888, SDL_TEXTUREACCESS_TARGET,
 								game.sprites[selected_sprite].width * 8, game.sprites[selected_sprite].height * 8);
-		SDL_SetTextureScaleMode(sprite_view_preview_texture, SDL_SCALEMODE_NEAREST);
+		SDL_SetTextureScaleMode(sprite_view_preview_texture, SDL_ScaleModeNearest);
 		SDL_SetTextureBlendMode(sprite_view_preview_texture, SDL_BLENDMODE_BLEND);
 
 		SDL_Texture* oldTarget = SDL_GetRenderTarget(renderer);
@@ -234,7 +234,7 @@ void show_sprite_viewer(Game& game, SDL_Renderer* renderer) {
 					continue;
 
 				SDL_SetRenderDrawColor(renderer, color.r, color.g, color.b, color.a);
-				sprite_preview_rect = {(float)x, (float)y, 1, 1};
+				sprite_preview_rect = {(int)x, (int)y, 1, 1};
 				SDL_RenderFillRect(renderer, &sprite_preview_rect);
 			}
 		}

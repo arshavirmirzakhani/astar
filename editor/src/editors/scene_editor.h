@@ -1,7 +1,7 @@
 #pragma once
 #include "engine/game.h"
 #include "imgui/imgui.h"
-#include <SDL3/SDL.h>
+#include <SDL.h>
 
 static std::string selected_scene;
 static unsigned int selected_scene_index;
@@ -15,7 +15,7 @@ SDL_Texture* scene_editor_preview_texture = nullptr;
 SDL_Texture* scene_editor_bg_texture	  = nullptr;
 SDL_Texture* scene_editor_tilemap	  = nullptr;
 SDL_Texture* scene_editor_objects	  = nullptr;
-SDL_FRect scene_editor_preview_rect;
+SDL_Rect scene_editor_preview_rect;
 
 static bool is_scene_changed	     = true;
 static bool is_scene_changed_bg	     = true;
@@ -184,7 +184,7 @@ void show_scene_editor(Game& game, SDL_Renderer* renderer) {
 					SDL_DestroyTexture(scene_editor_bg_texture);
 				scene_editor_bg_texture = SDL_CreateTexture(renderer, SDL_PIXELFORMAT_RGBA8888, SDL_TEXTUREACCESS_TARGET,
 									    game.scenes[selected_scene].width * 8, game.scenes[selected_scene].height * 8);
-				SDL_SetTextureScaleMode(scene_editor_bg_texture, SDL_SCALEMODE_NEAREST);
+				SDL_SetTextureScaleMode(scene_editor_bg_texture, SDL_ScaleModeNearest);
 				SDL_SetTextureBlendMode(scene_editor_bg_texture, SDL_BLENDMODE_BLEND);
 
 				SDL_Texture* oldTarget = SDL_GetRenderTarget(renderer);
@@ -204,7 +204,7 @@ void show_scene_editor(Game& game, SDL_Renderer* renderer) {
 						}
 
 						SDL_SetRenderDrawColor(renderer, color.r, color.g, color.b, color.a);
-						scene_editor_preview_rect = {(float)x, (float)y, 1, 1};
+						scene_editor_preview_rect = {(int)x, (int)y, 1, 1};
 						SDL_RenderFillRect(renderer, &scene_editor_preview_rect);
 					}
 				}
@@ -223,7 +223,7 @@ void show_scene_editor(Game& game, SDL_Renderer* renderer) {
 			SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
 			SDL_RenderClear(renderer);
 
-			SDL_RenderTexture(renderer, scene_editor_bg_texture, nullptr, nullptr);
+			SDL_RenderCopy(renderer, scene_editor_bg_texture, nullptr, nullptr);
 
 			SDL_SetRenderTarget(renderer, oldTarget);
 			is_scene_changed = false;

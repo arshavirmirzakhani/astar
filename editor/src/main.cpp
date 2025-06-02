@@ -1,8 +1,4 @@
-#ifdef __EMSCRIPTEN__
 #include <SDL.h>
-#else
-#include <SDL3/SDL.h>
-#endif
 
 #include "editors/globals.h"
 #include "editors/object_editor.h"
@@ -12,8 +8,8 @@
 #include "editors/sprite_viewer.h"
 #include "font.h"
 #include "imgui/imgui.h"
-#include "imgui/imgui_impl_sdl3.h"
-#include "imgui/imgui_impl_sdlrenderer3.h"
+#include "imgui/imgui_impl_sdl2.h"
+#include "imgui/imgui_impl_sdlrenderer2.h"
 #include "imgui_theme_setup.h"
 #include <cereal/archives/json.hpp>
 #include <engine/game.h>
@@ -33,21 +29,20 @@ static char new_project_name[255] = "";
 // Main code
 int main(int, char**) {
 
-	if (!SDL_Init(SDL_INIT_VIDEO | SDL_INIT_GAMEPAD)) {
+	if (!SDL_Init(SDL_INIT_EVERYTHING)) {
 		printf("Error: SDL_Init(): %s\n", SDL_GetError());
 		return -1;
 	}
 
 	// Create window with SDL_Renderer graphics context
-	SDL_WindowFlags window_flags = SDL_WINDOW_RESIZABLE | SDL_WINDOW_HIDDEN | SDL_WINDOW_HIGH_PIXEL_DENSITY;
-	SDL_Window* window	     = SDL_CreateWindow("Astar editor", 1280, 720, window_flags);
+	SDL_Window* window = SDL_CreateWindow("Astar editor", 0, 0, 1280, 720, SDL_WINDOW_RESIZABLE | SDL_WINDOW_HIDDEN);
 	if (window == nullptr) {
 		printf("Error: SDL_CreateWindow(): %s\n", SDL_GetError());
 		return -1;
 	}
 
-	SDL_Renderer* renderer = SDL_CreateRenderer(window, nullptr);
-	SDL_SetRenderVSync(renderer, 1);
+	SDL_Renderer* renderer = SDL_CreateRenderer(window, 0, 0);
+	SDL_RenderSetVSync(renderer, 1);
 	if (renderer == nullptr) {
 		SDL_Log("Error: SDL_CreateRenderer(): %s\n", SDL_GetError());
 		return -1;
@@ -75,8 +70,8 @@ int main(int, char**) {
 	//  Setup Dear ImGui style
 	SetupImGuiStyle();
 
-	ImGui_ImplSDL3_InitForSDLRenderer(window, renderer);
-	ImGui_ImplSDLRenderer3_Init(renderer);
+	ImGui_ImplSDL2_InitForSDLRenderer(window, renderer);
+	ImGui_ImplSDLRenderer2_Init(renderer);
 
 	ImVec4 clear_color = ImVec4(0.45f, 0.55f, 0.60f, 1.00f);
 	bool done	   = false;
@@ -105,10 +100,10 @@ int main(int, char**) {
 		SDL_Event event;
 		while (SDL_PollEvent(&event)) {
 
-			ImGui_ImplSDL3_ProcessEvent(&event);
-			if (event.type == SDL_EVENT_QUIT)
+			ImGui_ImplSDL2_ProcessEvent(&event);
+			if (event.type == SDL_QUIT)
 				done = true;
-			if (event.type == SDL_EVENT_WINDOW_CLOSE_REQUESTED && event.window.windowID == SDL_GetWindowID(window))
+			if (event.type == SDL_WINDOWEVENT_CLOSE && event.window.windowID == SDL_GetWindowID(window))
 				done = true;
 		}
 
@@ -117,8 +112,8 @@ int main(int, char**) {
 			continue;
 		}
 
-		ImGui_ImplSDLRenderer3_NewFrame();
-		ImGui_ImplSDL3_NewFrame();
+		ImGui_ImplSDLRenderer2_NewFrame();
+		ImGui_ImplSDL2_NewFrame();
 
 		ImGui::NewFrame();
 
@@ -253,15 +248,15 @@ int main(int, char**) {
 		// Rendering
 		ImGui::Render();
 
-		SDL_SetRenderScale(renderer, io.DisplayFramebufferScale.x, io.DisplayFramebufferScale.y);
-		SDL_SetRenderDrawColorFloat(renderer, clear_color.x, clear_color.y, clear_color.z, clear_color.w);
+		SDL_RenderSetScale(renderer, io.DisplayFramebufferScale.x, io.DisplayFramebufferScale.y);
+		SDL_SetRenderDrawColor(renderer, clear_color.x, clear_color.y, clear_color.z, clear_color.w);
 		SDL_RenderClear(renderer);
-		ImGui_ImplSDLRenderer3_RenderDrawData(ImGui::GetDrawData(), renderer);
+		ImGui_ImplSDLRenderer2_RenderDrawData(ImGui::GetDrawData(), renderer);
 		SDL_RenderPresent(renderer);
 	}
 
-	ImGui_ImplSDLRenderer3_Shutdown();
-	ImGui_ImplSDL3_Shutdown();
+	ImGui_ImplSDLRenderer2_Shutdown();
+	ImGui_ImplSDL2_Shutdown();
 
 	ImGui::DestroyContext();
 

@@ -1,7 +1,7 @@
 #pragma once
 #include "engine/game.h"
 #include "imgui/imgui.h"
-#include <SDL3/SDL.h>
+#include <SDL.h>
 
 static char new_object_type_name[255] = "";
 static char new_animation_name[255]   = "";
@@ -173,7 +173,7 @@ void show_object_editor(Game& game, SDL_Renderer* renderer) {
 							    renderer, SDL_PIXELFORMAT_RGBA8888, SDL_TEXTUREACCESS_TARGET, sprite.width * 8, sprite.height * 8);
 
 							SDL_SetTextureBlendMode(object_type_preview_texture, SDL_BLENDMODE_BLEND);
-							SDL_SetTextureScaleMode(object_type_preview_texture, SDL_SCALEMODE_NEAREST);
+							SDL_SetTextureScaleMode(object_type_preview_texture, SDL_ScaleModeNearest);
 
 							SDL_Texture* oldTarget = SDL_GetRenderTarget(renderer);
 							SDL_SetRenderTarget(renderer, object_type_preview_texture);
@@ -191,7 +191,7 @@ void show_object_editor(Game& game, SDL_Renderer* renderer) {
 										continue;
 
 									SDL_SetRenderDrawColor(renderer, color.r, color.g, color.b, color.a);
-									SDL_FRect rect = {(float)x, (float)y, 1, 1};
+									SDL_Rect rect = {(int)x, (int)y, 1, 1};
 									SDL_RenderFillRect(renderer, &rect);
 								}
 							}

@@ -4,7 +4,7 @@
 
 #define STB_IMAGE_IMPLEMENTATION
 #include "engine/game.h"
-#include <SDL3/SDL.h>
+#include <SDL.h>
 #include <stb_image.h>
 
 IGFD::FileDialogConfig file_conf;
