@@ -35,7 +35,8 @@ int main(int, char**) {
 	}
 
 	// Create window with SDL_Renderer graphics context
-	SDL_Window* window = SDL_CreateWindow("Astar editor", 0, 0, 1280, 720, SDL_WINDOW_RESIZABLE | SDL_WINDOW_HIDDEN | SDL_WINDOW_ALLOW_HIGHDPI);
+	SDL_Window* window = SDL_CreateWindow("Astar editor", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 1280, 720,
+					      SDL_WINDOW_RESIZABLE | SDL_WINDOW_HIDDEN | SDL_WINDOW_ALLOW_HIGHDPI);
 	if (window == nullptr) {
 		printf("Error: SDL_CreateWindow(): %s\n", SDL_GetError());
 		return -1;
@@ -249,7 +250,7 @@ int main(int, char**) {
 		ImGui::Render();
 
 		SDL_RenderSetScale(renderer, io.DisplayFramebufferScale.x, io.DisplayFramebufferScale.y);
-		SDL_SetRenderDrawColor(renderer, clear_color.x, clear_color.y, clear_color.z, clear_color.w);
+		SDL_SetRenderDrawColor(renderer, (Uint8)clear_color.x, (Uint8)clear_color.y, (Uint8)clear_color.z, (Uint8)clear_color.w);
 		SDL_RenderClear(renderer);
 		ImGui_ImplSDLRenderer2_RenderDrawData(ImGui::GetDrawData(), renderer);
 		SDL_RenderPresent(renderer);

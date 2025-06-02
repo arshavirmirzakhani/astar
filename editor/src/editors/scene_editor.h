@@ -13,8 +13,8 @@ static float scene_prev_zoom   = scene_view_zoom;
 
 SDL_Texture* scene_editor_preview_texture = nullptr;
 SDL_Texture* scene_editor_bg_texture	  = nullptr;
-SDL_Texture* scene_editor_tilemap	  = nullptr;
-SDL_Texture* scene_editor_objects	  = nullptr;
+SDL_Texture* scene_editor_tilemap_texture = nullptr;
+SDL_Texture* scene_editor_objects_texture = nullptr;
 SDL_Rect scene_editor_preview_rect;
 
 static bool is_scene_changed	     = true;
@@ -40,8 +40,10 @@ void show_scene_editor(Game& game, SDL_Renderer* renderer) {
 		if (ImGui::Button("Create")) {
 			std::string name = new_scene_name;
 			if (!name.empty() && game.scenes.find(name) == game.scenes.end()) {
-				game.scenes[name] = Scene();
-				selected_scene	  = name;
+				game.scenes[name]	 = Scene();
+				selected_scene		 = name;
+				is_scene_changed	 = true;
+				is_scene_changed_objects = true;
 			}
 			ImGui::CloseCurrentPopup();
 		}
@@ -136,6 +138,21 @@ void show_scene_editor(Game& game, SDL_Renderer* renderer) {
 			}
 		}
 
+		if (selected_object_in_scene != "") {
+			Object& object = game.scenes[selected_scene].objects[selected_object_in_scene];
+
+			float position[2] = {object.position_x, object.position_y};
+
+			ImGui::SetNextItemWidth(350);
+
+			ImGui::InputFloat2("Position", position);
+
+			object.position_x = position[0];
+			object.position_y = position[1];
+
+			is_scene_changed = true;
+		}
+
 		ImGui::EndGroup();
 
 		ImGui::SameLine();
@@ -178,56 +195,73 @@ void show_scene_editor(Game& game, SDL_Renderer* renderer) {
 
 		if (is_scene_changed) {
 
-			if (is_scene_changed_bg) {
-				// Render to scene texture
-				if (scene_editor_bg_texture)
-					SDL_DestroyTexture(scene_editor_bg_texture);
-				scene_editor_bg_texture = SDL_CreateTexture(renderer, SDL_PIXELFORMAT_RGBA8888, SDL_TEXTUREACCESS_TARGET,
-									    game.scenes[selected_scene].width * 8, game.scenes[selected_scene].height * 8);
-				SDL_SetTextureScaleMode(scene_editor_bg_texture, SDL_ScaleModeNearest);
-				SDL_SetTextureBlendMode(scene_editor_bg_texture, SDL_BLENDMODE_BLEND);
-
-				SDL_Texture* oldTarget = SDL_GetRenderTarget(renderer);
-				SDL_SetRenderTarget(renderer, scene_editor_bg_texture);
-
-				SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
-				SDL_RenderClear(renderer);
-
-				for (unsigned int y = 0; y < (unsigned int)game.scenes[selected_scene].height * 8; y++) {
-					for (unsigned int x = 0; x < (unsigned int)game.scenes[selected_scene].width * 8; x++) {
-
-						unsigned char pixel = scene_buffer[y * game.scenes[selected_scene].width * 8 + x];
-						Color color	    = game.pallete.colors[pixel];
-
-						if (color.a == 0 || pixel == 0) {
-							continue;
-						}
-
-						SDL_SetRenderDrawColor(renderer, color.r, color.g, color.b, color.a);
-						scene_editor_preview_rect = {(int)x, (int)y, 1, 1};
-						SDL_RenderFillRect(renderer, &scene_editor_preview_rect);
-					}
-				}
-
-				SDL_SetRenderTarget(renderer, oldTarget);
-				is_scene_changed_bg = false;
-			}
-
-			if (scene_editor_preview_texture)
-				SDL_DestroyTexture(scene_editor_preview_texture);
-			scene_editor_preview_texture = SDL_CreateTexture(renderer, SDL_PIXELFORMAT_RGBA8888, SDL_TEXTUREACCESS_TARGET,
-									 game.scenes[selected_scene].width * 8, game.scenes[selected_scene].height * 8);
+			// Render to scene texture
+			if (scene_editor_bg_texture)
+				SDL_DestroyTexture(scene_editor_bg_texture);
+			scene_editor_bg_texture = SDL_CreateTexture(renderer, SDL_PIXELFORMAT_RGBA8888, SDL_TEXTUREACCESS_TARGET,
+								    game.scenes[selected_scene].width * 8, game.scenes[selected_scene].height * 8);
+			SDL_SetTextureScaleMode(scene_editor_bg_texture, SDL_ScaleModeNearest);
+			SDL_SetTextureBlendMode(scene_editor_bg_texture, SDL_BLENDMODE_BLEND);
 
 			SDL_Texture* oldTarget = SDL_GetRenderTarget(renderer);
-			SDL_SetRenderTarget(renderer, scene_editor_preview_texture);
+			SDL_SetRenderTarget(renderer, scene_editor_bg_texture);
+
 			SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
 			SDL_RenderClear(renderer);
 
-			SDL_RenderCopy(renderer, scene_editor_bg_texture, nullptr, nullptr);
+			for (unsigned int y = 0; y < (unsigned int)game.scenes[selected_scene].height * 8; y++) {
+				for (unsigned int x = 0; x < (unsigned int)game.scenes[selected_scene].width * 8; x++) {
+
+					unsigned char pixel = scene_buffer[y * game.scenes[selected_scene].width * 8 + x];
+					Color color	    = game.pallete.colors[pixel];
+
+					if (color.a == 0 || pixel == 0) {
+						continue;
+					}
+
+					SDL_SetRenderDrawColor(renderer, color.r, color.g, color.b, color.a);
+					scene_editor_preview_rect = {(int)x, (int)y, 1, 1};
+					SDL_RenderFillRect(renderer, &scene_editor_preview_rect);
+				}
+			}
 
 			SDL_SetRenderTarget(renderer, oldTarget);
-			is_scene_changed = false;
+			is_scene_changed_bg = false;
+
+			if (scene_editor_objects_texture)
+				SDL_DestroyTexture(scene_editor_objects_texture);
+			scene_editor_objects_texture = SDL_CreateTexture(renderer, SDL_PIXELFORMAT_RGBA8888, SDL_TEXTUREACCESS_TARGET,
+									 game.scenes[selected_scene].width * 8, game.scenes[selected_scene].height * 8);
+
+			SDL_SetRenderTarget(renderer, scene_editor_objects_texture);
+			for (const auto& [name, object] : game.scenes[selected_scene].objects) {
+				SDL_Rect selection_rect = {(int)object.position_x - 1, (int)object.position_y - 1, 10, 10};
+
+				// Rendering
+
+				// Draw selected object with highlight
+				if (name == selected_object_in_scene) {
+					SDL_SetRenderDrawColor(renderer, 255, 255, 0, 255); // Yellow border
+					SDL_RenderDrawRect(renderer, &selection_rect);
+				}
+			}
+
+			SDL_SetRenderTarget(renderer, oldTarget);
 		}
+
+		scene_editor_preview_texture = SDL_CreateTexture(renderer, SDL_PIXELFORMAT_RGBA8888, SDL_TEXTUREACCESS_TARGET,
+								 game.scenes[selected_scene].width * 8, game.scenes[selected_scene].height * 8);
+
+		SDL_Texture* oldTarget = SDL_GetRenderTarget(renderer);
+		SDL_SetRenderTarget(renderer, scene_editor_preview_texture);
+		SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
+		SDL_RenderClear(renderer);
+
+		SDL_RenderCopy(renderer, scene_editor_bg_texture, nullptr, nullptr);
+		SDL_RenderCopy(renderer, scene_editor_objects_texture, nullptr, nullptr);
+
+		SDL_SetRenderTarget(renderer, oldTarget);
+		is_scene_changed = false;
 
 		// Draw image on canvas
 		ImVec2 imageSize = {scene_view_zoom * game.scenes[selected_scene].width * 8, scene_view_zoom * game.scenes[selected_scene].height * 8};

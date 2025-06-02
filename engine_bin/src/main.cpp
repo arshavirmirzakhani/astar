@@ -51,7 +51,8 @@ int main(int argc, char* argv[]) {
 		}
 	}
 
-	SDL_Window* window     = SDL_CreateWindow(game.name.c_str(), 0, 0, 640, 480, SDL_WINDOW_RESIZABLE | SDL_WINDOW_ALLOW_HIGHDPI);
+	SDL_Window* window =
+	    SDL_CreateWindow(game.name.c_str(), SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 640, 480, SDL_WINDOW_RESIZABLE | SDL_WINDOW_ALLOW_HIGHDPI);
 	SDL_Renderer* renderer = SDL_CreateRenderer(window, NULL, 0);
 
 	SDL_RenderSetLogicalSize(renderer, SCREEN_WIDTH, SCREEN_HEIGHT);
@@ -72,7 +73,7 @@ int main(int argc, char* argv[]) {
 			}
 		}
 
-		SDL_SetRenderDrawColor(renderer, 100, 100, 100, 255);
+		SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
 		SDL_RenderClear(renderer);
 
 		// SDL_SetRenderDrawBlendMode(renderer, SDL_BLENDMODE_BLEND);
