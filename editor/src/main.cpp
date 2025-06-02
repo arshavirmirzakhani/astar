@@ -29,13 +29,13 @@ static char new_project_name[255] = "";
 // Main code
 int main(int, char**) {
 
-	if (!SDL_Init(SDL_INIT_EVERYTHING)) {
+	if (SDL_Init(SDL_INIT_EVERYTHING)) {
 		printf("Error: SDL_Init(): %s\n", SDL_GetError());
 		return -1;
 	}
 
 	// Create window with SDL_Renderer graphics context
-	SDL_Window* window = SDL_CreateWindow("Astar editor", 0, 0, 1280, 720, SDL_WINDOW_RESIZABLE | SDL_WINDOW_HIDDEN);
+	SDL_Window* window = SDL_CreateWindow("Astar editor", 0, 0, 1280, 720, SDL_WINDOW_RESIZABLE | SDL_WINDOW_HIDDEN | SDL_WINDOW_ALLOW_HIGHDPI);
 	if (window == nullptr) {
 		printf("Error: SDL_CreateWindow(): %s\n", SDL_GetError());
 		return -1;

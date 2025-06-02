@@ -33,7 +33,7 @@ int main(int argc, char* argv[]) {
 		return -1;
 	}
 
-	if (!SDL_Init(SDL_INIT_EVERYTHING)) {
+	if (SDL_Init(SDL_INIT_EVERYTHING)) {
 		printf("Error: SDL_Init(): %s\n", SDL_GetError());
 		return -1;
 	}
@@ -51,7 +51,7 @@ int main(int argc, char* argv[]) {
 		}
 	}
 
-	SDL_Window* window     = SDL_CreateWindow(game.name.c_str(), 0, 0, 640, 480, SDL_WINDOW_RESIZABLE);
+	SDL_Window* window     = SDL_CreateWindow(game.name.c_str(), 0, 0, 640, 480, SDL_WINDOW_RESIZABLE | SDL_WINDOW_ALLOW_HIGHDPI);
 	SDL_Renderer* renderer = SDL_CreateRenderer(window, NULL, 0);
 
 	SDL_RenderSetLogicalSize(renderer, SCREEN_WIDTH, SCREEN_HEIGHT);
